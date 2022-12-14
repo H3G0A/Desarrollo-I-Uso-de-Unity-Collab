@@ -15,13 +15,20 @@ public class playerController : MonoBehaviour
     private float xRotation;
     private Vector3 vMovement;
     private CapsuleCollider playerCollider;
+    private float coyoteTimeCounter;
+    private float jumpBufferCounter;
+    private int airJumpsCounter;
 
+    [Header("Movement")]
     [SerializeField] private float playerGravity = 6;
     [SerializeField] private float walkSpeed = 10;
     [SerializeField] private float runSpeed = 20;
     [SerializeField] private float jumpForce = 17;
     [SerializeField] private float airJumpForce = 17;
-    [SerializeField] private float mouseSensitivity;
+    [SerializeField] private int airJumps = 1;
+    [SerializeField] private float mouseSensitivity = 13;
+    [SerializeField] private float coyoteTime = .1f;
+    [SerializeField] private float jumpBuffer = .07f;
 
     // Start is called before the first frame update
     void Start()
@@ -34,6 +41,10 @@ public class playerController : MonoBehaviour
         charController = GetComponent<CharacterController>();
         mainCamera = GetComponentInChildren<Camera>();
         playerCollider = GetComponent<CapsuleCollider>();
+
+        coyoteTimeCounter = 0;
+        jumpBufferCounter = 0;
+        airJumpsCounter = 0;
     }
 
     // Update is called once per frame
@@ -79,23 +90,47 @@ public class playerController : MonoBehaviour
         if (isGrounded())
         {
             vMovement = Vector3.zero;
-            if (jumpAction.triggered)
-            {
-                vMovement.y = jumpForce;
-            }
-            //Debug.Log("Grounded");
+            coyoteTimeCounter = coyoteTime;
+            airJumpsCounter = airJumps;
+            Debug.Log("Grounded");
         }
         else
         {
-            if (jumpAction.triggered)
-            {
-                vMovement.y = airJumpForce;
-            }
-            vMovement += Vector3.down * playerGravity * Time.fixedDeltaTime;
-            //Debug.Log("airbone");
+            coyoteTimeCounter -= Time.deltaTime;
+            vMovement += Time.fixedDeltaTime * playerGravity * Vector3.down;
+            Debug.Log("airbone");
         }
+
+        if (jumpAction.triggered)
+        {
+            jumpBufferCounter = jumpBuffer;   
+        }
+        else
+        {
+            jumpBufferCounter -= Time.deltaTime;
+        }
+        /*
+         * - Mientras que el tiempo entre el que el jugador salta y el objeto alcanza el suelo esté dentro del intervalo del buffer, el personaje saltará.
+         * - Si el jugador salta antes de que se acabe el tiempo del Coyote Time, el personaje saltará.
+         * - Coyote Time comprueba si el jugador "está en el suelo".
+         * - Jump Buffer comprueba si el jugador "ha pulsado la tecla de salto".
+         */
+        if (coyoteTimeCounter > 0 && jumpBufferCounter > 0)
+        {
+            vMovement = Vector3.up * jumpForce;
+            jumpBufferCounter = 0;
+            coyoteTimeCounter = 0;
+        }
+        else if (jumpAction.triggered && airJumpsCounter > 0)
+        {
+            vMovement = Vector3.up * airJumpForce;
+            airJumpsCounter -= 1;
+        }
+
         charController.Move(Time.deltaTime * vMovement);
         //Debug.Log(vMovement);
+
+        
     }
 
     /////////////////////////////AUXILIARES/////////////////////////////
