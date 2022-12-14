@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class playerController : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     private PlayerInput playerInput;
     private InputAction walkAction;
@@ -13,13 +13,18 @@ public class playerController : MonoBehaviour
     private Camera mainCamera;
     private float xRotation;
 
+    //Modelo?
+    [SerializeField] private int maxLife = 4;
+    [SerializeField] private int life;
     [SerializeField] private float walkSpeed;
     [SerializeField] private float runSpeed;
+
     [SerializeField] private float mouseSensitivity;
 
     // Start is called before the first frame update
     void Start()
     {
+        life = maxLife;
         playerInput = this.GetComponent<PlayerInput>();
         walkAction = playerInput.actions["Walk"];
         runAction = playerInput.actions["Run"];
@@ -42,12 +47,12 @@ public class playerController : MonoBehaviour
 
         if (runAction.IsPressed())
         {
-            Debug.Log("trigger");
+            //Debug.Log("trigger");
             this.charController.Move(Time.deltaTime * runSpeed * direction);
         }
         else
         {
-            Debug.Log("No");
+            //Debug.Log("No");
             this.charController.Move(Time.deltaTime * walkSpeed * direction);
         }
     } 
@@ -65,5 +70,15 @@ public class playerController : MonoBehaviour
 
         //Rota el jugador
         this.transform.Rotate(Vector3.up * mouseX);
+    }
+
+    public void GetDamage(int value)
+    {
+        life -= value;
+        Debug.Log("Life: " + life+"/"+maxLife);
+        if(life <= 0)
+        {
+            Debug.Log("Muerto");
+        }
     }
 }

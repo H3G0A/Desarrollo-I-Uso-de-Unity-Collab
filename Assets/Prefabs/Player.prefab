@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 3644268590611920245}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -246,6 +246,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827d4cf06ce2628408075e74a04ae6cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxLife: 4
+  life: 4
   walkSpeed: 10
   runSpeed: 20
   mouseSensitivity: 10
