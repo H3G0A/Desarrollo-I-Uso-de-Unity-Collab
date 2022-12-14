@@ -9,23 +9,31 @@ public class playerController : MonoBehaviour
     private InputAction walkAction;
     private InputAction runAction;
     private InputAction lookAction;
+    private InputAction jumpAction;
     private CharacterController charController;
     private Camera mainCamera;
     private float xRotation;
+    private Vector3 vMovement;
+    private CapsuleCollider playerCollider;
 
-    [SerializeField] private float walkSpeed;
-    [SerializeField] private float runSpeed;
+    [SerializeField] private float playerGravity = 6;
+    [SerializeField] private float walkSpeed = 10;
+    [SerializeField] private float runSpeed = 20;
+    [SerializeField] private float jumpForce = 17;
+    [SerializeField] private float airJumpForce = 17;
     [SerializeField] private float mouseSensitivity;
 
     // Start is called before the first frame update
     void Start()
     {
-        playerInput = this.GetComponent<PlayerInput>();
+        playerInput = GetComponent<PlayerInput>();
         walkAction = playerInput.actions["Walk"];
         runAction = playerInput.actions["Run"];
         lookAction = playerInput.actions["Look"];
-        this.charController = this.GetComponent<CharacterController>();
-        this.mainCamera = this.GetComponentInChildren<Camera>();
+        jumpAction = playerInput.actions["Jump"];
+        charController = GetComponent<CharacterController>();
+        mainCamera = GetComponentInChildren<Camera>();
+        playerCollider = GetComponent<CapsuleCollider>();
     }
 
     // Update is called once per frame
@@ -33,22 +41,20 @@ public class playerController : MonoBehaviour
     {
         Move();
         Look();
-
+        Jump();
     }
 
     private void Move()
     {
-        Vector3 direction = this.transform.right * walkAction.ReadValue<Vector2>().x + this.transform.forward * walkAction.ReadValue<Vector2>().y;
+        Vector3 direction = transform.right * walkAction.ReadValue<Vector2>().x + transform.forward * walkAction.ReadValue<Vector2>().y;
 
         if (runAction.IsPressed())
         {
-            Debug.Log("trigger");
-            this.charController.Move(Time.deltaTime * runSpeed * direction);
+            charController.Move(Time.deltaTime * runSpeed * direction);
         }
         else
         {
-            Debug.Log("No");
-            this.charController.Move(Time.deltaTime * walkSpeed * direction);
+            charController.Move(Time.deltaTime * walkSpeed * direction);
         }
     } 
 
@@ -64,6 +70,38 @@ public class playerController : MonoBehaviour
         mainCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
         //Rota el jugador
-        this.transform.Rotate(Vector3.up * mouseX);
+        transform.Rotate(Vector3.up * mouseX);
+    }
+
+    //Este metodo tambien le aplica la gravedad al objeto
+    private void Jump()
+    {
+        if (isGrounded())
+        {
+            vMovement = Vector3.zero;
+            if (jumpAction.triggered)
+            {
+                vMovement.y = jumpForce;
+            }
+            //Debug.Log("Grounded");
+        }
+        else
+        {
+            if (jumpAction.triggered)
+            {
+                vMovement.y = airJumpForce;
+            }
+            vMovement += Vector3.down * playerGravity * Time.fixedDeltaTime;
+            //Debug.Log("airbone");
+        }
+        charController.Move(Time.deltaTime * vMovement);
+        //Debug.Log(vMovement);
+    }
+
+    /////////////////////////////AUXILIARES/////////////////////////////
+    private bool isGrounded()
+    {
+        Vector3 center = transform.TransformPoint(playerCollider.center - Vector3.up * (playerCollider.height/2 - playerCollider.radius));
+        return Physics.BoxCast(center, new Vector3(playerCollider.radius, playerCollider.radius, playerCollider.radius), Vector3.down, Quaternion.identity, .34f);
     }
 }
