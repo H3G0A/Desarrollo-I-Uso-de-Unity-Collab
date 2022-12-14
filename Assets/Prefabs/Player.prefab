@@ -98,7 +98,6 @@ GameObject:
   - component: {fileID: 3644268590611920235}
   - component: {fileID: 3644268590611920246}
   - component: {fileID: 3644268590611920247}
-  - component: {fileID: 3644268590611920245}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -234,24 +233,3 @@ MonoBehaviour:
   m_DefaultActionMap: Land
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &3644268590611920245
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3644268590611920237}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 827d4cf06ce2628408075e74a04ae6cd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerGravity: 6
-  walkSpeed: 10
-  runSpeed: 20
-  jumpForce: 17
-  airJumpForce: 17
-  airJumps: 1
-  mouseSensitivity: 13
-  coyoteTime: 0.1
-  jumpBuffer: 0.07
