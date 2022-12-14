@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class playerController : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     private PlayerInput playerInput;
     private InputAction walkAction;
@@ -29,11 +29,20 @@ public class playerController : MonoBehaviour
     [SerializeField] private float mouseSensitivity = 13;
     [SerializeField] private float coyoteTime = .1f;
     [SerializeField] private float jumpBuffer = .07f;
+    //Modelo?
+    [SerializeField] private int maxLife = 4;
+    [SerializeField] private int life;
+    [SerializeField] private float walkSpeed;
+    [SerializeField] private float runSpeed;
+
+    [SerializeField] private float mouseSensitivity;
 
     // Start is called before the first frame update
     void Start()
     {
         playerInput = GetComponent<PlayerInput>();
+        life = maxLife;
+        playerInput = this.GetComponent<PlayerInput>();
         walkAction = playerInput.actions["Walk"];
         runAction = playerInput.actions["Run"];
         lookAction = playerInput.actions["Look"];
@@ -74,10 +83,13 @@ public class playerController : MonoBehaviour
         float mouseX = lookAction.ReadValue<Vector2>().x * mouseSensitivity * Time.deltaTime;
         float mouseY = lookAction.ReadValue<Vector2>().y * mouseSensitivity * Time.deltaTime;
 
+        Debug.Log("x = " + lookAction.ReadValue<Vector2>().x);
+        Debug.Log("y = " + lookAction.ReadValue<Vector2>().y);
+
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90, 90);
 
-        //Solo rota la cámara
+        //Solo rota la cï¿½mara
         mainCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
         //Rota el jugador
@@ -110,9 +122,9 @@ public class playerController : MonoBehaviour
             jumpBufferCounter -= Time.deltaTime;
         }
         /*
-         * - Mientras que el tiempo entre el que el jugador salta y el objeto alcanza el suelo esté dentro del intervalo del buffer, el personaje saltará.
-         * - Si el jugador salta antes de que se acabe el tiempo del Coyote Time, el personaje saltará.
-         * - Coyote Time comprueba si el jugador "está en el suelo".
+         * - Mientras que el tiempo entre el que el jugador salta y el objeto alcanza el suelo estï¿½ dentro del intervalo del buffer, el personaje saltarï¿½.
+         * - Si el jugador salta antes de que se acabe el tiempo del Coyote Time, el personaje saltarï¿½.
+         * - Coyote Time comprueba si el jugador "estï¿½ en el suelo".
          * - Jump Buffer comprueba si el jugador "ha pulsado la tecla de salto".
          */
         if (coyoteTimeCounter > 0 && jumpBufferCounter > 0)
@@ -138,5 +150,19 @@ public class playerController : MonoBehaviour
     {
         Vector3 center = transform.TransformPoint(playerCollider.center - Vector3.up * (playerCollider.height/2 - playerCollider.radius));
         return Physics.BoxCast(center, new Vector3(playerCollider.radius, playerCollider.radius, playerCollider.radius), Vector3.down, Quaternion.identity, .34f);
+    }
+
+    public void TakeDamage(int value)
+    {
+        if(life > 0)
+        {
+            life -= value;
+            Debug.Log("Life: " + life + "/" + maxLife);
+            if (life <= 0)
+            {
+                Debug.Log("Muerto");
+            }
+        }
+        
     }
 }
