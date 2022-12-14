@@ -246,8 +246,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827d4cf06ce2628408075e74a04ae6cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerGravity: 6
+  walkSpeed: 12
+  runSpeed: 20
+  jumpForce: 17
+  airJumpForce: 17
+  airJumps: 1
+  mouseSensitivity: 10
+  coyoteTime: 0.1
+  jumpBuffer: 0.07
   maxLife: 4
   life: 4
-  walkSpeed: 10
-  runSpeed: 20
-  mouseSensitivity: 10

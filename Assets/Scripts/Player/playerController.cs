@@ -30,18 +30,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float coyoteTime = .1f;
     [SerializeField] private float jumpBuffer = .07f;
     //Modelo?
+    [Header("Health")]
     [SerializeField] private int maxLife = 4;
     [SerializeField] private int life;
-    [SerializeField] private float walkSpeed;
-    [SerializeField] private float runSpeed;
-
-    [SerializeField] private float mouseSensitivity;
 
     // Start is called before the first frame update
     void Start()
     {
         playerInput = GetComponent<PlayerInput>();
-        life = maxLife;
         playerInput = this.GetComponent<PlayerInput>();
         walkAction = playerInput.actions["Walk"];
         runAction = playerInput.actions["Run"];
@@ -54,6 +50,7 @@ public class PlayerController : MonoBehaviour
         coyoteTimeCounter = 0;
         jumpBufferCounter = 0;
         airJumpsCounter = 0;
+        life = maxLife;
     }
 
     // Update is called once per frame
