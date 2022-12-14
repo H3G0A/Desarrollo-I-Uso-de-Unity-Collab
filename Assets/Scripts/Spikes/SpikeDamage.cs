@@ -8,7 +8,7 @@ public class SpikeDamage : MonoBehaviour
     {
         if(other.tag.Equals("Player"))
         {
-            other.GetComponent<PlayerController>().GetDamage(1);
+            other.GetComponent<PlayerController>().TakeDamage(1);
         }
     }
 }

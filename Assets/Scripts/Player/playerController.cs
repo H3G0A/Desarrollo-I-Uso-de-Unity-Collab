@@ -62,6 +62,9 @@ public class PlayerController : MonoBehaviour
         float mouseX = lookAction.ReadValue<Vector2>().x * mouseSensitivity * Time.deltaTime;
         float mouseY = lookAction.ReadValue<Vector2>().y * mouseSensitivity * Time.deltaTime;
 
+        Debug.Log("x = " + lookAction.ReadValue<Vector2>().x);
+        Debug.Log("y = " + lookAction.ReadValue<Vector2>().y);
+
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90, 90);
 
@@ -72,13 +75,17 @@ public class PlayerController : MonoBehaviour
         this.transform.Rotate(Vector3.up * mouseX);
     }
 
-    public void GetDamage(int value)
+    public void TakeDamage(int value)
     {
-        life -= value;
-        Debug.Log("Life: " + life+"/"+maxLife);
-        if(life <= 0)
+        if(life > 0)
         {
-            Debug.Log("Muerto");
+            life -= value;
+            Debug.Log("Life: " + life + "/" + maxLife);
+            if (life <= 0)
+            {
+                Debug.Log("Muerto");
+            }
         }
+        
     }
 }
