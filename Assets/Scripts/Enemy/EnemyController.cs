@@ -7,24 +7,25 @@ public class EnemyController : MonoBehaviour
 {
     [SerializeField] int health;
 
-    [SerializeField] NavMeshAgent agent;
+
+    NavMeshAgent agent;
     [SerializeField] Transform player;
 
     [SerializeField] LayerMask whatIsPlayer;
 
     //Patroling
-    [SerializeField] Vector3 walkPoint;
-    [SerializeField] bool walkPointSetted;
+    Vector3 walkPoint;
+    bool walkPointSetted;
 
     //Attacking
     [SerializeField] float timeBetweenAttacks;
-    [SerializeField] bool alreadyAttack;
+    bool alreadyAttack;
 
     //States
     [SerializeField] float sightRange;
     [SerializeField] float attackRange;
-    [SerializeField] bool playerInSightRange;
-    [SerializeField] bool playerInAttackRange;
+    bool playerInSightRange;
+    bool playerInAttackRange;
 
     [SerializeField] List<Transform> endPoints;
 
@@ -35,6 +36,10 @@ public class EnemyController : MonoBehaviour
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        if(endPoints.Count == 0)
+        {
+            attackRange = sightRange;
+        }
     }
 
     private void SearchWalkPoint()
@@ -62,15 +67,9 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private void ChasePlayer()
-    {
-        agent.SetDestination(player.position);
-    }
 
     private void AttackPlayer()
     {
-        agent.SetDestination(transform.position);
-
         transform.LookAt(player);
 
         if(!alreadyAttack)
@@ -109,18 +108,23 @@ public class EnemyController : MonoBehaviour
         //Check for sight and attack range
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
-
-        if(playerInSightRange && !playerInAttackRange)
+        
+        if (playerInSightRange && playerInAttackRange)
         {
-            ChasePlayer();
+            agent.SetDestination(transform.position);
+            AttackPlayer();
         }
-        else if(playerInSightRange && playerInAttackRange)
+        else if (playerInSightRange && !playerInAttackRange)
         {
+            agent.SetDestination(player.position);
             AttackPlayer();
         }
         else
         {
-            Patroling();
+            if(endPoints.Count > 0)
+            {
+                Patroling();
+            }
         }
 
     }
