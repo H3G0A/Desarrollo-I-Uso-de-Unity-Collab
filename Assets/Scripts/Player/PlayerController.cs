@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
     private CharacterController charController;
     private Camera mainCamera;
     private float xRotation;
-    private Vector3 vMovement;
+    private float vMovement;
     private CapsuleCollider playerCollider;
     private float coyoteTimeCounter;
     private float jumpBufferCounter;
@@ -29,12 +29,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float mouseSensitivity = 13;
     [SerializeField] private float coyoteTime = .1f;
     [SerializeField] private float jumpBuffer = .07f;
-    //Modelo?
     [Header("Health")]
     [SerializeField] private int maxLife = 4;
     [SerializeField] private int life;
 
-    // Start is called before the first frame update
     void Start()
     {
         playerInput = GetComponent<PlayerInput>();
@@ -51,6 +49,8 @@ public class PlayerController : MonoBehaviour
         jumpBufferCounter = 0;
         airJumpsCounter = 0;
         life = maxLife;
+
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
@@ -77,16 +77,16 @@ public class PlayerController : MonoBehaviour
 
     private void Look()
     {
-        float mouseX = lookAction.ReadValue<Vector2>().x * mouseSensitivity * Time.deltaTime;
-        float mouseY = lookAction.ReadValue<Vector2>().y * mouseSensitivity * Time.deltaTime;
+        float mouseX = lookAction.ReadValue<Vector2>().x * mouseSensitivity * Time.fixedDeltaTime;
+        float mouseY = lookAction.ReadValue<Vector2>().y * mouseSensitivity * Time.fixedDeltaTime;
 
-        Debug.Log("x = " + lookAction.ReadValue<Vector2>().x);
-        Debug.Log("y = " + lookAction.ReadValue<Vector2>().y);
+        //Debug.Log("x = " + lookAction.ReadValue<Vector2>().x);
+        //Debug.Log("y = " + lookAction.ReadValue<Vector2>().y);
 
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90, 90);
 
-        //Solo rota la c�mara
+        //Solo rota la camara
         mainCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
         //Rota el jugador
@@ -98,16 +98,16 @@ public class PlayerController : MonoBehaviour
     {
         if (isGrounded())
         {
-            vMovement = Vector3.zero;
+            vMovement = 0;
             coyoteTimeCounter = coyoteTime;
             airJumpsCounter = airJumps;
-            Debug.Log("Grounded");
+            //Debug.Log("Grounded");
         }
         else
         {
             coyoteTimeCounter -= Time.deltaTime;
-            vMovement += Time.fixedDeltaTime * playerGravity * Vector3.down;
-            Debug.Log("airbone");
+            vMovement -= Time.deltaTime * playerGravity;
+            //Debug.Log("airbone");
         }
 
         if (jumpAction.triggered)
@@ -119,24 +119,24 @@ public class PlayerController : MonoBehaviour
             jumpBufferCounter -= Time.deltaTime;
         }
         /*
-         * - Mientras que el tiempo entre el que el jugador salta y el objeto alcanza el suelo est� dentro del intervalo del buffer, el personaje saltar�.
-         * - Si el jugador salta antes de que se acabe el tiempo del Coyote Time, el personaje saltar�.
-         * - Coyote Time comprueba si el jugador "est� en el suelo".
+         * - Mientras que el tiempo entre el que el jugador salta y el objeto alcanza el suelo esta dentro del intervalo del buffer, el personaje saltara.
+         * - Si el jugador salta antes de que se acabe el tiempo del Coyote Time, el personaje saltara.
+         * - Coyote Time comprueba si el jugador "esta en el suelo".
          * - Jump Buffer comprueba si el jugador "ha pulsado la tecla de salto".
          */
         if (coyoteTimeCounter > 0 && jumpBufferCounter > 0)
         {
-            vMovement = Vector3.up * jumpForce;
+            vMovement = jumpForce;
             jumpBufferCounter = 0;
             coyoteTimeCounter = 0;
         }
         else if (jumpAction.triggered && airJumpsCounter > 0)
         {
-            vMovement = Vector3.up * airJumpForce;
+            vMovement = airJumpForce;
             airJumpsCounter -= 1;
         }
 
-        charController.Move(Time.deltaTime * vMovement);
+        charController.Move(Time.deltaTime * vMovement * Vector3.up);
         //Debug.Log(vMovement);
 
         
@@ -146,7 +146,16 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded()
     {
         Vector3 center = transform.TransformPoint(playerCollider.center - Vector3.up * (playerCollider.height/2 - playerCollider.radius));
-        return Physics.BoxCast(center, new Vector3(playerCollider.radius, playerCollider.radius, playerCollider.radius), Vector3.down, Quaternion.identity, .34f);
+        bool groundCheck = Physics.BoxCast(center, new Vector3(playerCollider.radius, playerCollider.radius, playerCollider.radius),
+                                            Vector3.down, Quaternion.identity, .34f);
+        if(groundCheck && vMovement < 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void TakeDamage(int value)
