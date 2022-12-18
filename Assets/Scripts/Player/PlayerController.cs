@@ -17,19 +17,20 @@ public class PlayerController : MonoBehaviour
     private CapsuleCollider playerCollider;
     private Camera mainCamera;
     private float xRotation;
-    private float vMovement;
-    private float fallSpeed;
+    private Vector3 hMovement;
+    private Vector3 vMovement;
     private float coyoteTimeCounter;
     private float jumpBufferCounter;
     private int airJumpsCounter;
     private float playerHeight;
     private bool isSliding;
     private float slideCdCounter;
+    private bool isCrouching;
 
     [Header("Movement")]
     [SerializeField] private float playerGravity = 6;
     [SerializeField] private float walkSpeed = 10;
-    [SerializeField] private float runSpeed = 15;
+    [SerializeField] private float runSpeed = 17;
     [SerializeField] private float jumpForce = 17;
     [SerializeField] private float airJumpForce = 17;
     [SerializeField] private int airJumps = 1;
@@ -63,6 +64,7 @@ public class PlayerController : MonoBehaviour
         playerHeight = charController.height;
         life = maxLife;
         slideCooldown += slideTime; //Asi, slideCooldown es el valor de enfriamiento del deslizamiento DESPUES de terminar de deslizarse
+        isCrouching = false;
 
         Cursor.lockState = CursorLockMode.Locked;
     }
@@ -70,7 +72,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!isSliding)
+        if (!isCrouching)
         {
             HorizontalMovement();
             Jump();
@@ -87,22 +89,23 @@ public class PlayerController : MonoBehaviour
 
         if (runAction.IsPressed())
         {
-            charController.Move(Time.deltaTime * runSpeed * direction);
+            hMovement = runSpeed * direction;
         }
         else
         {
-            charController.Move(Time.deltaTime * walkSpeed * direction);
+            hMovement = walkSpeed * direction;
         }
+        charController.Move(Time.deltaTime * hMovement);
     }
     private void Gravity()
     {
-        if (IsGrounded() && vMovement <= 0)
+        if (IsGrounded() && vMovement.y <= 0)
         {
-            vMovement = 0;
+            vMovement = Vector3.zero;
         }
         else
         {
-            vMovement -= Time.deltaTime * playerGravity;
+            vMovement += Time.deltaTime * playerGravity * Vector3.down;
         }
     }
 
@@ -131,15 +134,39 @@ public class PlayerController : MonoBehaviour
          */
         if (coyoteTimeCounter > 0 && jumpBufferCounter > 0)
         {
-            vMovement = jumpForce;
+            vMovement = jumpForce * Vector3.up;
             jumpBufferCounter = 0;
             coyoteTimeCounter = 0;
         }
         else if (jumpAction.triggered && airJumpsCounter > 0)
         {
-            vMovement = airJumpForce;
+            vMovement = airJumpForce * Vector3.up;
             airJumpsCounter -= 1;
         }
+    }
+
+    private void Slide()
+    {
+        if (slideAction.triggered && IsGrounded() && !isSliding && slideCdCounter <= 0)
+        {
+            ToggleSlide();
+            Invoke(nameof(ToggleSlide), slideTime); //Termina de deslizarse cuando pasa el tiempo
+        }
+        else if (isSliding && !slideAction.IsPressed())
+        {
+            CancelInvoke(nameof(ToggleSlide));
+            ToggleSlide();
+        }
+        if (slideCdCounter > 0)
+        {
+            slideCdCounter -= Time.deltaTime;
+        }
+    }
+
+    private void VerticalMovement()
+    {
+        charController.Move(Time.deltaTime * vMovement);
+        Debug.Log(vMovement);
     }
 
     private void Look()
@@ -160,43 +187,21 @@ public class PlayerController : MonoBehaviour
         transform.Rotate(Vector3.up * mouseX);
     }
 
-    private void VerticalMovement()
-    {
-        charController.Move(Time.deltaTime * vMovement * Vector3.up);
-    }
-
-    private void Slide()
-    {
-        if (slideAction.triggered && IsGrounded() && !isSliding && slideCdCounter <= 0)
-        {
-            ToggleSlide();
-            Invoke(nameof(ToggleSlide), slideTime); //Termina de deslizarse cuando pasa el tiempo
-        }
-        else if (isSliding && CanGetUp() && !slideAction.IsPressed())
-        {
-            CancelInvoke(nameof(ToggleSlide));
-            ToggleSlide();
-        }
-        if(slideCdCounter > 0)
-        {
-            slideCdCounter -= Time.deltaTime;
-        }
-    }
-
     /////////////////////////////AUXILIARES/////////////////////////////
     private bool IsGrounded()
     {
         Vector3 lowCenter = transform.TransformPoint(playerCollider.center + Vector3.down * (playerCollider.height/2 - playerCollider.radius));
-        return Physics.BoxCast(lowCenter, new Vector3(playerCollider.radius, playerCollider.radius, playerCollider.radius),
+        bool result = Physics.BoxCast(lowCenter, new Vector3(playerCollider.radius, playerCollider.radius, playerCollider.radius),
                                             Vector3.down, Quaternion.identity, .4f);
+        return result;
     }
 
     private bool CanGetUp()
     {
-        Vector3 center = transform.TransformPoint(playerCollider.center + Vector3.up * (playerCollider.height / 2 - playerCollider.radius));
-        return true;
-        //return Physics.BoxCast(center, new Vector3(playerCollider.radius, playerCollider.radius, playerCollider.radius), 
-        //                        Vector3.up, Quaternion.identity, .34f);
+        Vector3 upperCenter = transform.TransformPoint(playerCollider.center + Vector3.up * (playerCollider.height / 2 - playerCollider.radius));
+        bool result = Physics.BoxCast(upperCenter, new Vector3(playerCollider.radius, playerCollider.radius, playerCollider.radius), 
+                                Vector3.up, Quaternion.identity, (playerHeight - crouchHeight)/2 + .4f);
+        return !result;
     }
 
     private void ToggleSlide()
@@ -204,14 +209,19 @@ public class PlayerController : MonoBehaviour
         if (!isSliding)
         {
             isSliding = true;
+            isCrouching = true;
             slideCdCounter = slideCooldown;
             StartCoroutine(Sliding());
-            Debug.Log("Slide");
+        }
+        else if(CanGetUp())
+        {
+            isSliding = false;
+            isCrouching = false;
         }
         else
         {
             isSliding = false;
-            Debug.Log("Stand");
+            isCrouching = true;
         }
     }
 
@@ -239,8 +249,13 @@ public class PlayerController : MonoBehaviour
             charController.Move(Time.deltaTime * slideSpeed * direction);
             yield return null;
         }
+        while (isCrouching)
+        {
+            yield return null;
+        }
         charController.height = playerHeight;
         playerCollider.height = playerHeight;
         this.transform.position += Vector3.up * .5f;
+        isCrouching = false;
     }
 }

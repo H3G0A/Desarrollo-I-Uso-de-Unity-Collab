@@ -248,13 +248,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerGravity: 45
   walkSpeed: 12
-  runMultiplier: 1.5
+  runSpeed: 17
   jumpForce: 17
   airJumpForce: 17
   airJumps: 1
   mouseSensitivity: 3
   coyoteTime: 0.1
   jumpBuffer: 0.07
-  slideHeight: 0.5
+  crouchHeight: 1
+  slideSpeed: 35
+  slideTime: 0.5
+  slideCooldown: 0.5
   maxLife: 4
   life: 4
