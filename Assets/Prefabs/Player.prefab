@@ -246,6 +246,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827d4cf06ce2628408075e74a04ae6cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHealth: 3
   playerGravity: 45
   walkSpeed: 12
   runSpeed: 17
@@ -259,5 +260,3 @@ MonoBehaviour:
   slideSpeed: 35
   slideTime: 0.5
   slideCooldown: 0.5
-  maxLife: 4
-  life: 4

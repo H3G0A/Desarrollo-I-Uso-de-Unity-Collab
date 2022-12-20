@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyController : MonoBehaviour
+public class EnemyController : HealthComponent
 {
-    [SerializeField] int health;
-
     [SerializeField] NavMeshAgent agent;
     [SerializeField] Transform player;
 
@@ -19,6 +17,9 @@ public class EnemyController : MonoBehaviour
     //Attacking
     [SerializeField] float timeBetweenAttacks;
     [SerializeField] bool alreadyAttack;
+    [SerializeField] int bulletDmg;
+    [SerializeField] float bulletSpeed;
+    BulletController bulletScript;
 
     //States
     [SerializeField] float sightRange;
@@ -32,8 +33,9 @@ public class EnemyController : MonoBehaviour
 
     [SerializeField] Transform canon;
 
-    private void Awake()
+    private void Start()
     {
+        SetHealth();
         agent = GetComponent<NavMeshAgent>();
     }
 
@@ -75,10 +77,9 @@ public class EnemyController : MonoBehaviour
 
         if(!alreadyAttack)
         {
-            Rigidbody rb = Instantiate(projectile, canon.position, Quaternion.identity).GetComponent<Rigidbody>();
-
-            rb.AddForce(canon.forward * 32f, ForceMode.Impulse);
-            rb.AddForce(canon.up * 2f, ForceMode.Impulse);
+            bulletScript = Instantiate(projectile, canon.position, Quaternion.identity).GetComponent<BulletController>();
+            bulletScript.velocity = bulletSpeed * canon.forward;
+            bulletScript.dmg = bulletDmg;
 
             alreadyAttack = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
@@ -88,20 +89,6 @@ public class EnemyController : MonoBehaviour
     private void ResetAttack()
     {
         alreadyAttack = false;
-    }
-
-    public void TakeDamage(int value)
-    {
-        health -= value;
-        if(health <= 0)
-        {
-            Invoke(nameof(DestroyEnemy), 0.5f);
-        }
-    }
-
-    private void DestroyEnemy()
-    {
-        Destroy(gameObject);
     }
 
     private void Update()
