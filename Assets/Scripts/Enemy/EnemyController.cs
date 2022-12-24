@@ -80,37 +80,28 @@ public class EnemyController : MonoBehaviour
 
         if(!alreadyAttack)
         {
-            /*Rigidbody rb = Instantiate(projectile, canon.position, Quaternion.identity).GetComponent<Rigidbody>();
-
-
-
-            rb.AddForce(canon.forward * 32f, ForceMode.Impulse);
-            rb.AddForce(canon.up * 2f, ForceMode.Impulse);*/
-
             bulletSpawner.SpawnBullet(canon);
 
             alreadyAttack = true;
-            Invoke(nameof(ResetAttack), timeBetweenAttacks);
+
+            StartCoroutine(ResetAttack());
         }
     }
 
-    private void ResetAttack()
+    IEnumerator ResetAttack()
     {
+        yield return new WaitForSeconds(timeBetweenAttacks);
         alreadyAttack = false;
     }
+
 
     public void TakeDamage(int value)
     {
         health -= value;
         if(health <= 0)
         {
-            Invoke(nameof(DestroyEnemy), 0.5f);
+            Destroy(gameObject);
         }
-    }
-
-    private void DestroyEnemy()
-    {
-        Destroy(gameObject);
     }
 
     private void Update()
@@ -127,7 +118,6 @@ public class EnemyController : MonoBehaviour
         else if (playerInSightRange && !playerInAttackRange)
         {
             agent.SetDestination(player.position);
-            AttackPlayer();
         }
         else
         {

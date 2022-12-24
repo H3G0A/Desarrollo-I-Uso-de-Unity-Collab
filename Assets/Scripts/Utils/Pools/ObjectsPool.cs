@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class ObjectsPool : MonoBehaviour
 {
-    private int poolSize = 10;
-
     private static Dictionary<int, Queue<GameObject>> pool = new Dictionary<int, Queue<GameObject>>();
     private static Dictionary<int, GameObject> parents = new Dictionary<int, GameObject>();
 
@@ -24,7 +22,7 @@ public class ObjectsPool : MonoBehaviour
     }
 
 
-    public static void PreLoad(GameObject objectToPool, int amount)
+    public static void PreLoad(GameObject objectToPool, int poolSize)
     {
         int id = objectToPool.GetInstanceID();
 
@@ -34,7 +32,7 @@ public class ObjectsPool : MonoBehaviour
 
         pool.Add(id, new Queue<GameObject>());
 
-        for(int i = 0; i < amount; ++i)
+        for(int i = 0; i < poolSize; ++i)
         {
             CreateObject(objectToPool);
         }

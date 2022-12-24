@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BulletSpawner : Spawner
@@ -13,8 +11,16 @@ public class BulletSpawner : Spawner
 
     public void SpawnBullet(Transform spawnTransform)
     {
-        Rigidbody rb = Spawn(bullet, spawnTransform).GetComponent<Rigidbody>();
+        GameObject go = Spawn(bullet, spawnTransform);
+        go.GetComponent<BulletController>().SetBulletSpawner(this);
+        Rigidbody rb = go.GetComponent<Rigidbody>();
+
+        rb.velocity = Vector3.zero;
         rb.AddForce(spawnTransform.forward * 32f, ForceMode.Impulse);
-        rb.AddForce(spawnTransform.up * 2f, ForceMode.Impulse);
+    }
+
+    public void DeSpawn(GameObject go)
+    {
+        ObjectsPool.RecicleObject(bullet, go);
     }
 }

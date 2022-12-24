@@ -5,16 +5,14 @@ using UnityEngine;
 public class Spawner : MonoBehaviour
 {
     protected float timeToDespawn;
-    protected void SetUp(GameObject primitive, int amount, float timeToDespawn)
+    protected void SetUp(GameObject primitive, int poolSize, float timeToDespawn)
     {
         this.timeToDespawn = timeToDespawn;
-        ObjectsPool.PreLoad(primitive, amount);
+        ObjectsPool.PreLoad(primitive, poolSize);
     }
 
     protected GameObject Spawn(GameObject primitive, Transform spawnTransform)
     {
-        
-
         GameObject go = ObjectsPool.GetObject(primitive);
 
         go.transform.position = spawnTransform.position;

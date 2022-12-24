@@ -230,10 +230,10 @@ public class PlayerController : MonoBehaviour
         if(life > 0)
         {
             life -= value;
-            Debug.Log("Life: " + life + "/" + maxLife);
+            //Debug.Log("Life: " + life + "/" + maxLife);
             if (life <= 0)
             {
-                Debug.Log("Muerto");
+                //Debug.Log("Muerto");
             }
         }
         
