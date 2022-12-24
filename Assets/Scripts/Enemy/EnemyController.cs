@@ -33,6 +33,7 @@ public class EnemyController : MonoBehaviour
 
     [SerializeField] Transform canon;
 
+    BulletSpawner bulletSpawner;
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -40,6 +41,11 @@ public class EnemyController : MonoBehaviour
         {
             attackRange = sightRange;
         }
+    }
+
+    public void SetBulletSpawner(BulletSpawner bulletSpawner)
+    {
+        this.bulletSpawner = bulletSpawner;
     }
 
     private void SearchWalkPoint()
@@ -74,10 +80,14 @@ public class EnemyController : MonoBehaviour
 
         if(!alreadyAttack)
         {
-            Rigidbody rb = Instantiate(projectile, canon.position, Quaternion.identity).GetComponent<Rigidbody>();
+            /*Rigidbody rb = Instantiate(projectile, canon.position, Quaternion.identity).GetComponent<Rigidbody>();
+
+
 
             rb.AddForce(canon.forward * 32f, ForceMode.Impulse);
-            rb.AddForce(canon.up * 2f, ForceMode.Impulse);
+            rb.AddForce(canon.up * 2f, ForceMode.Impulse);*/
+
+            bulletSpawner.SpawnBullet(canon);
 
             alreadyAttack = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);

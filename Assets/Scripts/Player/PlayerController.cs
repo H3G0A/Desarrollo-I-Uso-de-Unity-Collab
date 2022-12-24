@@ -166,7 +166,7 @@ public class PlayerController : MonoBehaviour
     private void VerticalMovement()
     {
         charController.Move(Time.deltaTime * vMovement);
-        Debug.Log(vMovement);
+        //Debug.Log(vMovement);
     }
 
     private void Look()
