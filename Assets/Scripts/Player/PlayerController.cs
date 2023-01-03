@@ -146,7 +146,7 @@ public class PlayerController : HealthComponent
 
     private void Slide()
     {
-        if (slideAction.triggered && IsGrounded() && !isSliding && slideCdCounter <= 0)
+        if (slideAction.triggered && IsGrounded() && !isSliding && slideCdCounter <= 0 && walkAction.IsPressed())
         {
             ToggleSlide();
             Invoke(nameof(ToggleSlide), slideTime); //Termina de deslizarse cuando pasa el tiempo
@@ -233,7 +233,9 @@ public class PlayerController : HealthComponent
     {
         charController.height = crouchHeight;
         playerCollider.height = crouchHeight;
-        Vector3 direction = this.transform.forward;
+        Vector3 direction = transform.right * walkAction.ReadValue<Vector2>().x + transform.forward * walkAction.ReadValue<Vector2>().y;
+        Vector3.Normalize(direction);
+        Debug.Log(direction);
         while (isSliding) { 
             charController.Move(Time.deltaTime * slideSpeed * direction);
             yield return null;

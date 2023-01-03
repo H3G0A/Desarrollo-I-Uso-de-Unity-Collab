@@ -7,6 +7,7 @@ public class BulletController : MonoBehaviour
     public Vector3 velocity;
     public int dmg;
     Rigidbody rb;
+    BulletSpawner bulletSpawner;
 
     private void Awake()
     {
@@ -17,6 +18,10 @@ public class BulletController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.AddForce(velocity, ForceMode.VelocityChange);
+    }
+    public void SetBulletSpawner(BulletSpawner bulletSpawner)
+    {
+        this.bulletSpawner = bulletSpawner;
     }
 
     private void DestroyBullet()
