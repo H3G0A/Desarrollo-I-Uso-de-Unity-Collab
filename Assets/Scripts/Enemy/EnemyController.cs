@@ -81,11 +81,6 @@ public class EnemyController : HealthComponent
 
         if(!alreadyAttack)
         {
-
-            //bulletScript = Instantiate(projectile, canon.position, Quaternion.identity).GetComponent<BulletController>();
-            //bulletScript.velocity = bulletSpeed * canon.forward;
-            //bulletScript.dmg = bulletDmg;
-
             bulletSpawner.SpawnBullet(canon);
 
 

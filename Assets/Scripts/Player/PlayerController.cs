@@ -26,6 +26,7 @@ public class PlayerController : HealthComponent
      bool isSliding;
      float slideCdCounter;
      bool isCrouching;
+     [SerializeField] GameObject gun;
 
     [Header("Movement")]
     [SerializeField]  float playerGravity = 6;
@@ -180,6 +181,7 @@ public class PlayerController : HealthComponent
 
         //Solo rota la camara
         mainCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        gun.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
         //Rota el jugador
         transform.Rotate(Vector3.up * mouseX);
