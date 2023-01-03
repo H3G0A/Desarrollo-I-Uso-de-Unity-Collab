@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyController : MonoBehaviour
+public class EnemyController : HealthComponent
 {
-    [SerializeField] int health;
-
-
     NavMeshAgent agent;
     [SerializeField] Transform player;
 
@@ -19,7 +16,10 @@ public class EnemyController : MonoBehaviour
 
     //Attacking
     [SerializeField] float timeBetweenAttacks;
-    bool alreadyAttack;
+    [SerializeField] bool alreadyAttack;
+    [SerializeField] int bulletDmg;
+    [SerializeField] float bulletSpeed;
+    BulletController bulletScript;
 
     //States
     [SerializeField] float sightRange;
@@ -36,6 +36,7 @@ public class EnemyController : MonoBehaviour
     BulletSpawner bulletSpawner;
     private void Awake()
     {
+        SetHealth();
         agent = GetComponent<NavMeshAgent>();
         if(endPoints.Count == 0)
         {
@@ -82,6 +83,7 @@ public class EnemyController : MonoBehaviour
         {
             bulletSpawner.SpawnBullet(canon);
 
+
             alreadyAttack = true;
 
             StartCoroutine(ResetAttack());
@@ -92,16 +94,6 @@ public class EnemyController : MonoBehaviour
     {
         yield return new WaitForSeconds(timeBetweenAttacks);
         alreadyAttack = false;
-    }
-
-
-    public void TakeDamage(int value)
-    {
-        health -= value;
-        if(health <= 0)
-        {
-            Destroy(gameObject);
-        }
     }
 
     private void Update()

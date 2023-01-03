@@ -144,12 +144,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 670dcc1ace3f2b8449788044b4ef723b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 2
+  maxHealth: 2
   agent: {fileID: 0}
   player: {fileID: 0}
-  whatIsGround:
-    serializedVersion: 2
-    m_Bits: 128
   whatIsPlayer:
     serializedVersion: 2
     m_Bits: 64
@@ -157,8 +154,10 @@ MonoBehaviour:
   walkPointSetted: 0
   timeBetweenAttacks: 0.5
   alreadyAttack: 0
-  sightRange: 15
-  attackRange: 8
+  bulletDmg: 1
+  bulletSpeed: 32
+  sightRange: 30
+  attackRange: 30
   playerInSightRange: 0
   playerInAttackRange: 0
   endPoints:

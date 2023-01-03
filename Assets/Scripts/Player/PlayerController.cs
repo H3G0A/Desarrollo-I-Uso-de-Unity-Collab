@@ -3,50 +3,50 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : HealthComponent
 {
     //INPUTS
-    private PlayerInput playerInput;
-    private InputAction walkAction;
-    private InputAction runAction;
-    private InputAction lookAction;
-    private InputAction jumpAction;
-    private InputAction slideAction;
+     PlayerInput playerInput;
+     InputAction walkAction;
+     InputAction runAction;
+     InputAction lookAction;
+     InputAction jumpAction;
+     InputAction slideAction;
 
-    private CharacterController charController;
-    private CapsuleCollider playerCollider;
-    private Camera mainCamera;
-    private float xRotation;
-    private Vector3 hMovement;
-    private Vector3 vMovement;
-    private float coyoteTimeCounter;
-    private float jumpBufferCounter;
-    private int airJumpsCounter;
-    private float playerHeight;
-    private bool isSliding;
-    private float slideCdCounter;
-    private bool isCrouching;
+     CharacterController charController;
+     CapsuleCollider playerCollider;
+     Camera mainCamera;
+     float xRotation;
+     Vector3 hMovement;
+     Vector3 vMovement;
+     float coyoteTimeCounter;
+     float jumpBufferCounter;
+     int airJumpsCounter;
+     float playerHeight;
+     bool isSliding;
+     float slideCdCounter;
+     bool isCrouching;
+     [SerializeField] GameObject gun;
 
     [Header("Movement")]
-    [SerializeField] private float playerGravity = 6;
-    [SerializeField] private float walkSpeed = 10;
-    [SerializeField] private float runSpeed = 17;
-    [SerializeField] private float jumpForce = 17;
-    [SerializeField] private float airJumpForce = 17;
-    [SerializeField] private int airJumps = 1;
-    [SerializeField] private float mouseSensitivity = 13;
-    [SerializeField] private float coyoteTime = .1f;
-    [SerializeField] private float jumpBuffer = .07f;
-    [SerializeField] private float crouchHeight = 1;
-    [SerializeField] private float slideSpeed = 35;
-    [SerializeField] private float slideTime = .5f;
-    [SerializeField] private float slideCooldown = .5f;
-    [Header("Health")]
-    [SerializeField] private int maxLife = 4;
-    [SerializeField] private int life;
+    [SerializeField]  float playerGravity = 6;
+    [SerializeField]  float walkSpeed = 10;
+    [SerializeField]  float runSpeed = 17;
+    [SerializeField]  float jumpForce = 17;
+    [SerializeField]  float airJumpForce = 17;
+    [SerializeField]  int airJumps = 1;
+    [SerializeField]  float mouseSensitivity = 13;
+    [SerializeField]  float coyoteTime = .1f;
+    [SerializeField]  float jumpBuffer = .07f;
+    [SerializeField]  float crouchHeight = 1;
+    [SerializeField]  float slideSpeed = 35;
+    [SerializeField]  float slideTime = .5f;
+    [SerializeField]  float slideCooldown = .5f;
 
     void Start()
     {
+        SetHealth();
+
         playerInput = GetComponent<PlayerInput>();
         charController = GetComponent<CharacterController>();
         mainCamera = GetComponentInChildren<Camera>();
@@ -62,11 +62,11 @@ public class PlayerController : MonoBehaviour
         jumpBufferCounter = 0;
         airJumpsCounter = 0;
         playerHeight = charController.height;
-        life = maxLife;
         slideCooldown += slideTime; //Asi, slideCooldown es el valor de enfriamiento del deslizamiento DESPUES de terminar de deslizarse
         isCrouching = false;
 
         Cursor.lockState = CursorLockMode.Locked;
+        Debug.Log(health);
     }
 
     // Update is called once per frame
@@ -147,7 +147,7 @@ public class PlayerController : MonoBehaviour
 
     private void Slide()
     {
-        if (slideAction.triggered && IsGrounded() && !isSliding && slideCdCounter <= 0)
+        if (slideAction.triggered && IsGrounded() && !isSliding && slideCdCounter <= 0 && walkAction.IsPressed())
         {
             ToggleSlide();
             Invoke(nameof(ToggleSlide), slideTime); //Termina de deslizarse cuando pasa el tiempo
@@ -166,7 +166,6 @@ public class PlayerController : MonoBehaviour
     private void VerticalMovement()
     {
         charController.Move(Time.deltaTime * vMovement);
-        //Debug.Log(vMovement);
     }
 
     private void Look()
@@ -182,6 +181,7 @@ public class PlayerController : MonoBehaviour
 
         //Solo rota la camara
         mainCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        gun.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
         //Rota el jugador
         transform.Rotate(Vector3.up * mouseX);
@@ -225,18 +225,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int value)
+    private void OnDeath()
     {
-        if(life > 0)
-        {
-            life -= value;
-            //Debug.Log("Life: " + life + "/" + maxLife);
-            if (life <= 0)
-            {
-                //Debug.Log("Muerto");
-            }
-        }
-        
+        Debug.Log("Player died");
     }
 
     /////////////////////////////CORRUTINAS/////////////////////////////
@@ -244,7 +235,9 @@ public class PlayerController : MonoBehaviour
     {
         charController.height = crouchHeight;
         playerCollider.height = crouchHeight;
-        Vector3 direction = this.transform.forward;
+        Vector3 direction = transform.right * walkAction.ReadValue<Vector2>().x + transform.forward * walkAction.ReadValue<Vector2>().y;
+        Vector3.Normalize(direction);
+        Debug.Log(direction);
         while (isSliding) { 
             charController.Move(Time.deltaTime * slideSpeed * direction);
             yield return null;
