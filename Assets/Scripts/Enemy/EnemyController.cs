@@ -5,14 +5,14 @@ using UnityEngine.AI;
 
 public class EnemyController : HealthComponent
 {
-    [SerializeField] NavMeshAgent agent;
+    NavMeshAgent agent;
     [SerializeField] Transform player;
 
     [SerializeField] LayerMask whatIsPlayer;
 
     //Patroling
-    [SerializeField] Vector3 walkPoint;
-    [SerializeField] bool walkPointSetted;
+    Vector3 walkPoint;
+    bool walkPointSetted;
 
     //Attacking
     [SerializeField] float timeBetweenAttacks;
@@ -24,8 +24,8 @@ public class EnemyController : HealthComponent
     //States
     [SerializeField] float sightRange;
     [SerializeField] float attackRange;
-    [SerializeField] bool playerInSightRange;
-    [SerializeField] bool playerInAttackRange;
+    bool playerInSightRange;
+    bool playerInAttackRange;
 
     [SerializeField] List<Transform> endPoints;
 
@@ -33,10 +33,20 @@ public class EnemyController : HealthComponent
 
     [SerializeField] Transform canon;
 
-    private void Start()
+    BulletSpawner bulletSpawner;
+    private void Awake()
     {
         SetHealth();
         agent = GetComponent<NavMeshAgent>();
+        if(endPoints.Count == 0)
+        {
+            attackRange = sightRange;
+        }
+    }
+
+    public void SetBulletSpawner(BulletSpawner bulletSpawner)
+    {
+        this.bulletSpawner = bulletSpawner;
     }
 
     private void SearchWalkPoint()
@@ -64,30 +74,30 @@ public class EnemyController : HealthComponent
         }
     }
 
-    private void ChasePlayer()
-    {
-        agent.SetDestination(player.position);
-    }
 
     private void AttackPlayer()
     {
-        agent.SetDestination(transform.position);
-
         transform.LookAt(player);
 
         if(!alreadyAttack)
         {
-            bulletScript = Instantiate(projectile, canon.position, Quaternion.identity).GetComponent<BulletController>();
-            bulletScript.velocity = bulletSpeed * canon.forward;
-            bulletScript.dmg = bulletDmg;
+
+            //bulletScript = Instantiate(projectile, canon.position, Quaternion.identity).GetComponent<BulletController>();
+            //bulletScript.velocity = bulletSpeed * canon.forward;
+            //bulletScript.dmg = bulletDmg;
+
+            bulletSpawner.SpawnBullet(canon);
+
 
             alreadyAttack = true;
-            Invoke(nameof(ResetAttack), timeBetweenAttacks);
+
+            StartCoroutine(ResetAttack());
         }
     }
 
-    private void ResetAttack()
+    IEnumerator ResetAttack()
     {
+        yield return new WaitForSeconds(timeBetweenAttacks);
         alreadyAttack = false;
     }
 
@@ -96,18 +106,22 @@ public class EnemyController : HealthComponent
         //Check for sight and attack range
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
-
-        if(playerInSightRange && !playerInAttackRange)
+        
+        if (playerInSightRange && playerInAttackRange)
         {
-            ChasePlayer();
-        }
-        else if(playerInSightRange && playerInAttackRange)
-        {
+            agent.SetDestination(transform.position);
             AttackPlayer();
+        }
+        else if (playerInSightRange && !playerInAttackRange)
+        {
+            agent.SetDestination(player.position);
         }
         else
         {
-            Patroling();
+            if(endPoints.Count > 0)
+            {
+                Patroling();
+            }
         }
 
     }
