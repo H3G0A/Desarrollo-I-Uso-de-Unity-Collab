@@ -6,27 +6,28 @@ using UnityEngine.InputSystem;
 public class PlayerController : HealthComponent
 {
     //INPUTS
-     PlayerInput playerInput;
-     InputAction walkAction;
-     InputAction runAction;
-     InputAction lookAction;
-     InputAction jumpAction;
-     InputAction slideAction;
+    PlayerInput playerInput;
+    InputAction walkAction;
+    InputAction runAction;
+    InputAction lookAction;
+    InputAction jumpAction;
+    InputAction slideAction;
 
-     CharacterController charController;
-     CapsuleCollider playerCollider;
-     Camera mainCamera;
-     float xRotation;
-     Vector3 hMovement;
-     Vector3 vMovement;
-     float coyoteTimeCounter;
-     float jumpBufferCounter;
-     int airJumpsCounter;
-     float playerHeight;
-     bool isSliding;
-     float slideCdCounter;
-     bool isCrouching;
-     [SerializeField] GameObject gun;
+    CharacterController charController;
+    CapsuleCollider playerCollider;
+    Camera mainCamera;
+    float xRotation;
+    Vector3 hMovement;
+    Vector3 vMovement;
+    float coyoteTimeCounter;
+    float jumpBufferCounter;
+    int airJumpsCounter;
+    float playerHeight;
+    bool isSliding;
+    float slideCdCounter;
+    bool isCrouching;
+    public bool wallRunning;
+    [SerializeField] GameObject gun;
 
     [Header("Movement")]
     [SerializeField]  float playerGravity = 6;
@@ -85,21 +86,31 @@ public class PlayerController : HealthComponent
 
     private void HorizontalMovement()
     {
-        Vector3 direction = transform.right * walkAction.ReadValue<Vector2>().x + transform.forward * walkAction.ReadValue<Vector2>().y;
-
-        if (runAction.IsPressed())
+        if(!wallRunning)
         {
-            hMovement = runSpeed * direction;
+            Vector3 direction = transform.right * walkAction.ReadValue<Vector2>().x + transform.forward * walkAction.ReadValue<Vector2>().y;
+
+            if (runAction.IsPressed())
+            {
+                hMovement = runSpeed * direction;
+            }
+            else
+            {
+                hMovement = walkSpeed * direction;
+            }
+            charController.Move(Time.deltaTime * hMovement);
         }
         else
         {
-            hMovement = walkSpeed * direction;
+            Vector3 direction = GetComponent<WallRunning>().wallForward;
+            hMovement = runSpeed * direction;
+            charController.Move(Time.deltaTime * hMovement);
+            Debug.Log("#Wall Hmovement = " + hMovement);
         }
-        charController.Move(Time.deltaTime * hMovement);
     }
     private void Gravity()
     {
-        if (IsGrounded() && vMovement.y <= 0)
+        if ((IsGrounded() && vMovement.y <= 0) || wallRunning)
         {
             vMovement = Vector3.zero;
         }
@@ -188,7 +199,7 @@ public class PlayerController : HealthComponent
     }
 
     /////////////////////////////AUXILIARES/////////////////////////////
-    private bool IsGrounded()
+    public bool IsGrounded()
     {
         Vector3 lowCenter = transform.TransformPoint(playerCollider.center + Vector3.down * (playerCollider.height/2 - playerCollider.radius));
         bool result = Physics.BoxCast(lowCenter, new Vector3(playerCollider.radius, playerCollider.radius, playerCollider.radius),
