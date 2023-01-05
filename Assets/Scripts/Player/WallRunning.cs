@@ -9,8 +9,8 @@ public class WallRunning : MonoBehaviour
     [SerializeField] LayerMask whatIsWall;
     [SerializeField] LayerMask whatIsGround;
     [SerializeField] float wallRunForce;
-    [SerializeField] float maxWallRunTime;
-    [SerializeField] float wallRunTime;
+    [SerializeField] public float wallJumpUpForce;
+    [SerializeField] public float wallJumpSideForce;
 
     [Header("Inputs")]
     PlayerInput playerInput;
@@ -24,13 +24,19 @@ public class WallRunning : MonoBehaviour
     bool wallLeft;
     bool wallRight;
     public Vector3 wallForward;
+    public Vector3 wallNormal;
+
+    [Header("Exiting")]
+    [SerializeField] float exitWallTime;
+    bool exitingWall;
+    float exitWallTimer;
 
     [Header("References")]
     public Transform orientation;
     PlayerController pc;
     Rigidbody rb;
 
-    // Start is called before the first frame update
+
     void Start()
     {
         playerInput = GetComponent<PlayerInput>();
@@ -46,19 +52,39 @@ public class WallRunning : MonoBehaviour
         wallLeft = Physics.Raycast(transform.position, -orientation.right, out leftWallHit, wallCheckDistance, whatIsWall);
     }
 
-    private bool AboveGround()
-    {
-        return Physics.Raycast(transform.position, Vector3.down, minJumpHeight, whatIsGround);
-    }
-
     private void StateMachine()
     {
         //State 1 - WallRunning
-        if((wallLeft || wallRight) && !pc.IsGrounded())// && AboveGround())
+        if((wallLeft || wallRight) && !pc.IsGrounded() && !exitingWall)
         {
             if(!pc.wallRunning)
             {
                 StartWallRun();
+            }
+
+            //wall jump
+            if(jumpAction.triggered)
+            {
+                Debug.Log("#Wall Salta!");
+                WallJump();
+            }
+        }
+        //State 2 - Exiting
+        else if(exitingWall)
+        {
+            if(pc.wallRunning)
+            {
+                StopWallRun();
+            }
+
+            if(exitWallTimer > 0)
+            {
+                exitWallTimer -= Time.deltaTime;
+            }
+
+            if(exitWallTimer <= 0)
+            {
+                exitingWall = false;
             }
         }
 
@@ -82,20 +108,28 @@ public class WallRunning : MonoBehaviour
     {
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.y);
 
-        Vector3 wallNormal = wallRight ? rightWallHit.normal : leftWallHit.normal;
+        wallNormal = wallRight ? rightWallHit.normal : leftWallHit.normal;
         wallForward = Vector3.Cross(wallNormal, transform.up);
 
         if((orientation.forward - wallForward).magnitude > (orientation.forward - -wallForward).magnitude)
         {
             wallForward = -wallForward;
         }
-
-        rb.AddForce(wallForward * wallRunForce, ForceMode.Force);
     }
 
     private void StopWallRun()
     {
         pc.wallRunning = false;
+    }
+
+    private void WallJump()
+    {
+        exitingWall = true;
+        exitWallTimer = exitWallTime;
+        pc.wallJump = true;
+        pc.wallRunning = false;
+
+        wallNormal = wallRight ? rightWallHit.normal : leftWallHit.normal;
     }
 
     // Update is called once per frame

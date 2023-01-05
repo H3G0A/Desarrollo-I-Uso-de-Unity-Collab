@@ -26,7 +26,10 @@ public class PlayerController : HealthComponent
     bool isSliding;
     float slideCdCounter;
     bool isCrouching;
+
     public bool wallRunning;
+    public bool wallJump = false;
+
     [SerializeField] GameObject gun;
 
     [Header("Movement")]
@@ -102,10 +105,14 @@ public class PlayerController : HealthComponent
         }
         else
         {
-            Vector3 direction = GetComponent<WallRunning>().wallForward;
-            hMovement = runSpeed * direction;
-            charController.Move(Time.deltaTime * hMovement);
-            Debug.Log("#Wall Hmovement = " + hMovement);
+            //if(!wallJump)
+            //{
+                Vector3 direction = GetComponent<WallRunning>().wallForward;
+                hMovement = runSpeed * direction;
+                charController.Move(Time.deltaTime * hMovement);
+                Debug.Log("#Wall Hmovement = " + hMovement);
+            //}
+            
         }
     }
     private void Gravity()
@@ -116,6 +123,7 @@ public class PlayerController : HealthComponent
         }
         else
         {
+            Debug.Log("#Wall Applying gravity");
             vMovement += Time.deltaTime * playerGravity * Vector3.down;
         }
     }
@@ -143,17 +151,28 @@ public class PlayerController : HealthComponent
          * - Coyote Time comprueba si el jugador "esta en el suelo".
          * - Jump Buffer comprueba si el jugador "ha pulsado la tecla de salto".
          */
-        if (coyoteTimeCounter > 0 && jumpBufferCounter > 0)
+        if(wallJump)
         {
-            vMovement = jumpForce * Vector3.up;
-            jumpBufferCounter = 0;
-            coyoteTimeCounter = 0;
+            Debug.Log("#Wall Applying wall jump");
+            vMovement = GetComponent<WallRunning>().wallJumpUpForce * Vector3.up + GetComponent<WallRunning>().wallNormal * GetComponent<WallRunning>().wallJumpSideForce;
+
+            wallJump = false;
         }
-        else if (jumpAction.triggered && airJumpsCounter > 0)
+        else
         {
-            vMovement = airJumpForce * Vector3.up;
-            airJumpsCounter -= 1;
+            if (coyoteTimeCounter > 0 && jumpBufferCounter > 0)
+            {
+                vMovement = jumpForce * Vector3.up;
+                jumpBufferCounter = 0;
+                coyoteTimeCounter = 0;
+            }
+            else if (jumpAction.triggered && airJumpsCounter > 0)
+            {
+                vMovement = airJumpForce * Vector3.up;
+                airJumpsCounter -= 1;
+            }
         }
+        
     }
 
     private void Slide()

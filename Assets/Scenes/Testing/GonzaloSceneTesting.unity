@@ -403,7 +403,7 @@ Transform:
   m_GameObject: {fileID: 469161225}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 4.15, y: 3.56, z: -12.883484}
-  m_LocalScale: {x: 19.79, y: 7.27, z: 1}
+  m_LocalScale: {x: 40.24, y: 7.27, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1302,10 +1302,13 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   wallRunForce: 200
-  maxWallRunTime: 1.5
-  wallRunTime: 0
+  wallJumpUpForce: 7
+  wallJumpSideForce: 12
   wallCheckDistance: 0.7
   minJumpHeight: 2
+  wallForward: {x: 0, y: 0, z: 0}
+  wallNormal: {x: 0, y: 0, z: 0}
+  exitWallTime: 0.2
   orientation: {fileID: 1953777472}
 --- !u!1 &1979169045
 GameObject:
