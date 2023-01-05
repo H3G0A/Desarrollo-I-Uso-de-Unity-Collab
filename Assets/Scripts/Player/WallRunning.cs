@@ -23,8 +23,8 @@ public class WallRunning : MonoBehaviour
     RaycastHit rightWallHit;
     bool wallLeft;
     bool wallRight;
-    public Vector3 wallForward;
-    public Vector3 wallNormal;
+    [HideInInspector] public Vector3 wallForward;
+    [HideInInspector] public Vector3 wallNormal;
 
     [Header("Exiting")]
     [SerializeField] float exitWallTime;
@@ -65,7 +65,6 @@ public class WallRunning : MonoBehaviour
             //wall jump
             if(jumpAction.triggered)
             {
-                Debug.Log("#Wall Salta!");
                 WallJump();
             }
         }
@@ -100,7 +99,6 @@ public class WallRunning : MonoBehaviour
 
     private void StartWallRun()
     {
-        Debug.Log("#Wall Start wall run");
         pc.wallRunning = true;
     }
 

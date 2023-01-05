@@ -105,14 +105,9 @@ public class PlayerController : HealthComponent
         }
         else
         {
-            //if(!wallJump)
-            //{
-                Vector3 direction = GetComponent<WallRunning>().wallForward;
-                hMovement = runSpeed * direction;
-                charController.Move(Time.deltaTime * hMovement);
-                Debug.Log("#Wall Hmovement = " + hMovement);
-            //}
-            
+            Vector3 direction = GetComponent<WallRunning>().wallForward;
+            hMovement = runSpeed * direction;
+            charController.Move(Time.deltaTime * hMovement);
         }
     }
     private void Gravity()
@@ -123,7 +118,6 @@ public class PlayerController : HealthComponent
         }
         else
         {
-            Debug.Log("#Wall Applying gravity");
             vMovement += Time.deltaTime * playerGravity * Vector3.down;
         }
     }
