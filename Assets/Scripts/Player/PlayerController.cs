@@ -48,6 +48,8 @@ public class PlayerController : HealthComponent
     [SerializeField]  float slideCooldown = .5f;
     [Header("Mouse")]
     [SerializeField]  float mouseSensitivity = 13;
+    [Header("HUD")]
+    [SerializeField] GameObject playerHUD;
 
     void Start()
     {
@@ -59,7 +61,7 @@ public class PlayerController : HealthComponent
         playerCollider = GetComponent<CapsuleCollider>();
 
         playerGunScr = mainCamera.GetComponentInChildren<PlayerGun>();
-        playerHUDScr = GetComponentInChildren<PlayerHUD>();
+        playerHUDScr = playerHUD.GetComponent<PlayerHUD>();
 
         walkAction = playerInput.actions["Walk"];
         runAction = playerInput.actions["Run"];
@@ -218,7 +220,7 @@ public class PlayerController : HealthComponent
         Vector3 halfExtents = new Vector3(playerCollider.radius * transform.localScale.x, playerCollider.radius * transform.localScale.y,
                                         playerCollider.radius * transform.localScale.z);
 
-        bool result = Physics.BoxCast(lowCenter, halfExtents, Vector3.down, Quaternion.identity, .4f);
+        bool result = Physics.BoxCast(lowCenter, halfExtents, Vector3.down, Quaternion.identity, .1f);
         return result;
     }
 

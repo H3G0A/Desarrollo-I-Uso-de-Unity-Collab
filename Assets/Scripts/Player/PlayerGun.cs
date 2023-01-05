@@ -6,23 +6,23 @@ public class PlayerGun : MonoBehaviour
     [SerializeField] float range = 100f;
     [SerializeField] float fireCooldown = .25f;
     [SerializeField] LayerMask ignoreLayers;
+    [SerializeField] ParticleSystem MuzzleFlash;
 
     float fireCooldownCounter;
-    Transform firePoint;
     Camera mainCamera;
 
     private void Start()
     {
-        firePoint = GetComponentInChildren<Transform>();
         mainCamera = GetComponentInParent<Camera>();
 
-        transform.LookAt(mainCamera.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, 3)));
+        transform.LookAt(mainCamera.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, 10)));
     }
 
     public void Shoot()
     {
         if(Time.time >= fireCooldownCounter)
         {
+            MuzzleFlash.Play();
             RaycastHit hit;
             if(Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out hit, range))
                 ManageCollisions(hit);
@@ -32,7 +32,7 @@ public class PlayerGun : MonoBehaviour
 
     private void ManageCollisions(RaycastHit hit)
     {
-        Debug.Log(hit.transform.name);
+        //Debug.Log(hit.transform.name);
         HealthComponent healthComponent = hit.transform.GetComponent<HealthComponent>();
         if (healthComponent)
             healthComponent.TakeDamage(dmg);
