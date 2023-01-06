@@ -100,6 +100,8 @@ GameObject:
   - component: {fileID: 3644268590611920246}
   - component: {fileID: 3644268590611920247}
   - component: {fileID: 3644268590611920245}
+  - component: {fileID: 1953777473}
+  - component: {fileID: 1953777474}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -249,6 +251,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 3
   currentHealth: 0
+  wallRunning: 0
+  wallJump: 0
   walkSpeed: 12
   runSpeed: 20
   jumpForce: 17
@@ -263,6 +267,49 @@ MonoBehaviour:
   slideCooldown: 0.5
   mouseSensitivity: 3
   playerHUD: {fileID: 0}
+--- !u!54 &1953777473
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3644268590611920237}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 0
+--- !u!114 &1953777474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3644268590611920237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd11611e55df0c84eb137d235c667743, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whatIsWall:
+    serializedVersion: 2
+    m_Bits: 256
+  whatIsGround:
+    serializedVersion: 2
+    m_Bits: 128
+  wallRunForce: 200
+  wallJumpUpForce: 7
+  wallJumpSideForce: 12
+  wallCheckDistance: 0.7
+  minJumpHeight: 2
+  wallForward: {x: 0, y: 0, z: 0}
+  wallNormal: {x: 0, y: 0, z: 0}
+  exitWallTime: 0.2
+  orientation: {fileID: 3644268590611920232}
 --- !u!1001 &3644268591536246817
 PrefabInstance:
   m_ObjectHideFlags: 0
