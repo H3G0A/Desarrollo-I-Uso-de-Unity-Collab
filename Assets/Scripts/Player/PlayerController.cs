@@ -16,7 +16,6 @@ public class PlayerController : HealthComponent
     //SCRIPTS
     PlayerGun playerGunScr;
     PlayerHUD playerHUDScr;
-    WallRunning wallRunningScr;
 
     CharacterController charController;
     CapsuleCollider playerCollider;
@@ -31,8 +30,8 @@ public class PlayerController : HealthComponent
     bool isSliding;
     float slideCdCounter;
     bool isCrouching;
-    [HideInInspector] public bool wallRunning;
-    [HideInInspector] public bool wallJump = false;
+    public bool wallRunning;
+    public bool wallJump = false;
 
     [Header("Move")]
     [SerializeField]  float walkSpeed = 10;
@@ -65,7 +64,6 @@ public class PlayerController : HealthComponent
 
         playerGunScr = mainCamera.GetComponentInChildren<PlayerGun>();
         playerHUDScr = playerHUD.GetComponent<PlayerHUD>();
-        wallRunningScr = GetComponent<WallRunning>();
 
         walkAction = playerInput.actions["Walk"];
         runAction = playerInput.actions["Run"];
@@ -160,7 +158,7 @@ public class PlayerController : HealthComponent
         if(wallJump)
         {
             Debug.Log("#Wall Applying wall jump");
-            vMovement = wallRunningScr.wallJumpUpForce * Vector3.up + wallRunningScr.wallNormal * wallRunningScr.wallJumpSideForce;
+            vMovement = GetComponent<WallRunning>().wallJumpUpForce * Vector3.up + GetComponent<WallRunning>().wallNormal * GetComponent<WallRunning>().wallJumpSideForce;
 
             wallJump = false;
         }
