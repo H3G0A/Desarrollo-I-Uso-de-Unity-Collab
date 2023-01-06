@@ -30,6 +30,8 @@ public class PlayerController : HealthComponent
     bool isSliding;
     float slideCdCounter;
     bool isCrouching;
+    public bool wallRunning;
+    public bool wallJump = false;
 
     [Header("Move")]
     [SerializeField]  float walkSpeed = 10;
@@ -97,21 +99,30 @@ public class PlayerController : HealthComponent
     //////////////////////MOVEMENT
     private void HorizontalMovement()
     {
-        Vector3 direction = transform.right * walkAction.ReadValue<Vector2>().x + transform.forward * walkAction.ReadValue<Vector2>().y;
-
-        if (runAction.IsPressed())
+        if(!wallRunning)
         {
-            hMovement = runSpeed * direction;
+            Vector3 direction = transform.right * walkAction.ReadValue<Vector2>().x + transform.forward * walkAction.ReadValue<Vector2>().y;
+
+            if (runAction.IsPressed())
+            {
+                hMovement = runSpeed * direction;
+            }
+            else
+            {
+                hMovement = walkSpeed * direction;
+            }
+            charController.Move(Time.deltaTime * hMovement);
         }
         else
         {
-            hMovement = walkSpeed * direction;
+            Vector3 direction = GetComponent<WallRunning>().wallForward;
+            hMovement = runSpeed * direction;
+            charController.Move(Time.deltaTime * hMovement);
         }
-        charController.Move(Time.deltaTime * hMovement);
     }
     private void Gravity()
     {
-        if (IsGrounded() && vMovement.y <= 0)
+        if ((IsGrounded() && vMovement.y <= 0) || wallRunning)
         {
             vMovement = Vector3.zero;
         }
@@ -144,17 +155,28 @@ public class PlayerController : HealthComponent
          * - Coyote Time comprueba si el jugador "esta en el suelo".
          * - Jump Buffer comprueba si el jugador "ha pulsado la tecla de salto".
          */
-        if (coyoteTimeCounter > 0 && jumpBufferCounter > 0)
+        if(wallJump)
         {
-            vMovement = jumpForce * Vector3.up;
-            jumpBufferCounter = 0;
-            coyoteTimeCounter = 0;
+            Debug.Log("#Wall Applying wall jump");
+            vMovement = GetComponent<WallRunning>().wallJumpUpForce * Vector3.up + GetComponent<WallRunning>().wallNormal * GetComponent<WallRunning>().wallJumpSideForce;
+
+            wallJump = false;
         }
-        else if (jumpAction.triggered && airJumpsCounter > 0)
+        else
         {
-            vMovement = airJumpForce * Vector3.up;
-            airJumpsCounter -= 1;
+            if (coyoteTimeCounter > 0 && jumpBufferCounter > 0)
+            {
+                vMovement = jumpForce * Vector3.up;
+                jumpBufferCounter = 0;
+                coyoteTimeCounter = 0;
+            }
+            else if (jumpAction.triggered && airJumpsCounter > 0)
+            {
+                vMovement = airJumpForce * Vector3.up;
+                airJumpsCounter -= 1;
+            }
         }
+        
     }
 
     private void Slide()
@@ -214,7 +236,7 @@ public class PlayerController : HealthComponent
     }
 
     /////////////////////////////AUXILIARES/////////////////////////////
-    private bool IsGrounded()
+    public bool IsGrounded()
     {
         Vector3 lowCenter = transform.TransformPoint(playerCollider.center + Vector3.down * (playerCollider.height/2 - playerCollider.radius));
         Vector3 halfExtents = new Vector3(playerCollider.radius * transform.localScale.x, playerCollider.radius * transform.localScale.y,
