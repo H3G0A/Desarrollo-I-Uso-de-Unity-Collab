@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class PlayerGun : MonoBehaviour
@@ -6,27 +7,38 @@ public class PlayerGun : MonoBehaviour
     [SerializeField] float range = 100f;
     [SerializeField] float fireCooldown = .25f;
     [SerializeField] LayerMask ignoreLayers;
-    [SerializeField] ParticleSystem MuzzleFlash;
+    [SerializeField] ParticleSystem muzzleFlash;
+    [SerializeField] TrailRenderer bulletTrail;
+    [SerializeField] Transform firePoint;
+    [SerializeField] float trailSpeed;
 
-    float fireCooldownCounter;
+    float lastTimeFired;
     Camera mainCamera;
 
     private void Start()
     {
         mainCamera = GetComponentInParent<Camera>();
-
-        transform.LookAt(mainCamera.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, 10)));
+        //El arma siempre mira al centro de la pantalla
+        transform.LookAt(mainCamera.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, 50)));
     }
 
     public void Shoot()
     {
-        if(Time.time >= fireCooldownCounter)
+        if(lastTimeFired + fireCooldown < Time.time)
         {
-            MuzzleFlash.Play();
-            RaycastHit hit;
-            if(Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out hit, range))
+            muzzleFlash.Play();
+            TrailRenderer trail = Instantiate(bulletTrail, firePoint.position, Quaternion.identity);
+            if (Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hit, range))
+            {
                 ManageCollisions(hit);
-            fireCooldownCounter = Time.time + fireCooldown;
+                StartCoroutine(SpawnTrail(trail, hit.point));
+            }
+            else
+            {
+                Vector3 midScreen = mainCamera.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, 50));
+                StartCoroutine(SpawnTrail(trail, midScreen)); //Si acertamos, simulamos un hitpoint muy lejos para el trail
+            }
+            lastTimeFired = Time.time;
         }
     }
 
@@ -36,5 +48,21 @@ public class PlayerGun : MonoBehaviour
         HealthComponent healthComponent = hit.transform.GetComponent<HealthComponent>();
         if (healthComponent)
             healthComponent.TakeDamage(dmg);
+    }
+
+    private IEnumerator SpawnTrail(TrailRenderer trail, Vector3 hitPoint)
+    {
+        Vector3 startPosition = trail.transform.position;
+        float distance = Vector3.Distance(startPosition, hitPoint);
+        float startDistance = distance;
+
+        while(distance > 0)
+        {
+            trail.transform.position = Vector3.Lerp(startPosition, hitPoint, 1 - (distance / startDistance));
+            distance -= Time.deltaTime * trailSpeed;
+            yield return null;
+        }
+
+        trail.transform.position = hitPoint;
     }
 }
