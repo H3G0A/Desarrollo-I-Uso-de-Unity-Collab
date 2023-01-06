@@ -11,13 +11,16 @@ public class PlayerGun : MonoBehaviour
     [SerializeField] TrailRenderer bulletTrail;
     [SerializeField] Transform firePoint;
     [SerializeField] float trailSpeed;
+    [SerializeField] AudioClip shootSound;
 
     float lastTimeFired;
     Camera mainCamera;
+    AudioSource audio;
 
     private void Start()
     {
         mainCamera = GetComponentInParent<Camera>();
+        audio = GetComponent<AudioSource>();
         //El arma siempre mira al centro de la pantalla
         transform.LookAt(mainCamera.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, 50)));
     }
@@ -26,6 +29,8 @@ public class PlayerGun : MonoBehaviour
     {
         if(lastTimeFired + fireCooldown < Time.time)
         {
+            audio.pitch = Random.Range(1f, 1.3f);
+            audio.PlayOneShot(shootSound);
             muzzleFlash.Play();
             TrailRenderer trail = Instantiate(bulletTrail, firePoint.position, Quaternion.identity);
             if (Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hit, range))
