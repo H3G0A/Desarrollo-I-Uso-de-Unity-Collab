@@ -6,21 +6,21 @@ public class HealthComponent : MonoBehaviour
 {
     [Header("Health")]
     [SerializeField] protected int maxHealth;
-    protected int health;
+    [SerializeField] protected int currentHealth;
 
     protected void SetHealth()
     {
-        health = maxHealth;
+        currentHealth = maxHealth;
     }
 
-    public void TakeDamage(int value)
+    public virtual void TakeDamage(int value)
     {
-        health -= value;
-        if (health <= 0)
+        currentHealth -= value;
+        if (currentHealth <= 0)
         {
             Invoke(nameof(OnDeath), 0.5f);
         }
-        Debug.Log(health);
+        Debug.Log(currentHealth);
     }
 
     private void OnDeath()

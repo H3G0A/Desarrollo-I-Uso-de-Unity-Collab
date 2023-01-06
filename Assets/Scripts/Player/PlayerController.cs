@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,6 +11,11 @@ public class PlayerController : HealthComponent
     InputAction lookAction;
     InputAction jumpAction;
     InputAction slideAction;
+    InputAction shootAction;
+
+    //SCRIPTS
+    PlayerGun playerGunScr;
+    PlayerHUD playerHUDScr;
 
     CharacterController charController;
     CapsuleCollider playerCollider;
@@ -26,26 +30,28 @@ public class PlayerController : HealthComponent
     bool isSliding;
     float slideCdCounter;
     bool isCrouching;
-
     public bool wallRunning;
     public bool wallJump = false;
 
-    [SerializeField] GameObject gun;
-
-    [Header("Movement")]
-    [SerializeField]  float playerGravity = 6;
+    [Header("Move")]
     [SerializeField]  float walkSpeed = 10;
     [SerializeField]  float runSpeed = 17;
+    [Header("Jump")]
     [SerializeField]  float jumpForce = 17;
+    [SerializeField]  float playerGravity = 6;
     [SerializeField]  float airJumpForce = 17;
     [SerializeField]  int airJumps = 1;
-    [SerializeField]  float mouseSensitivity = 13;
     [SerializeField]  float coyoteTime = .1f;
     [SerializeField]  float jumpBuffer = .07f;
+    [Header("Slide")]
     [SerializeField]  float crouchHeight = 1;
     [SerializeField]  float slideSpeed = 35;
     [SerializeField]  float slideTime = .5f;
     [SerializeField]  float slideCooldown = .5f;
+    [Header("Mouse")]
+    [SerializeField]  float mouseSensitivity = 13;
+    [Header("HUD")]
+    [SerializeField] GameObject playerHUD;
 
     void Start()
     {
@@ -56,11 +62,15 @@ public class PlayerController : HealthComponent
         mainCamera = GetComponentInChildren<Camera>();
         playerCollider = GetComponent<CapsuleCollider>();
 
+        playerGunScr = mainCamera.GetComponentInChildren<PlayerGun>();
+        playerHUDScr = playerHUD.GetComponent<PlayerHUD>();
+
         walkAction = playerInput.actions["Walk"];
         runAction = playerInput.actions["Run"];
         lookAction = playerInput.actions["Look"];
         jumpAction = playerInput.actions["Jump"];
         slideAction = playerInput.actions["Slide"];
+        shootAction = playerInput.actions["Shoot"];
 
         coyoteTimeCounter = 0;
         jumpBufferCounter = 0;
@@ -70,10 +80,8 @@ public class PlayerController : HealthComponent
         isCrouching = false;
 
         Cursor.lockState = CursorLockMode.Locked;
-        Debug.Log(health);
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (!isCrouching)
@@ -85,8 +93,10 @@ public class PlayerController : HealthComponent
         VerticalMovement();
         Slide();
         Look();
+        Shoot();
     }
 
+    //////////////////////MOVEMENT
     private void HorizontalMovement()
     {
         if(!wallRunning)
@@ -205,20 +215,38 @@ public class PlayerController : HealthComponent
 
         //Solo rota la camara
         mainCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        gun.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
         //Rota el jugador
         transform.Rotate(Vector3.up * mouseX);
+    }
+
+    /////////////////////////COMBAT
+    private void Shoot()
+    {
+        if (shootAction.triggered)
+        {
+            playerGunScr.Shoot();
+        }
+    }
+
+    public override void TakeDamage(int value) //la keyword new hace que puedas sobrescribir la funcion del padre
+    {
+        base.TakeDamage(value); //con base. llamamos a funciones en el padre
+        playerHUDScr.SetHealth(currentHealth);
     }
 
     /////////////////////////////AUXILIARES/////////////////////////////
     public bool IsGrounded()
     {
         Vector3 lowCenter = transform.TransformPoint(playerCollider.center + Vector3.down * (playerCollider.height/2 - playerCollider.radius));
-        bool result = Physics.BoxCast(lowCenter, new Vector3(playerCollider.radius, playerCollider.radius, playerCollider.radius),
-                                            Vector3.down, Quaternion.identity, .4f);
+        Vector3 halfExtents = new Vector3(playerCollider.radius * transform.localScale.x, playerCollider.radius * transform.localScale.y,
+                                        playerCollider.radius * transform.localScale.z);
+
+        bool result = Physics.BoxCast(lowCenter, halfExtents, Vector3.down, Quaternion.identity, .1f);
         return result;
     }
+
+    
 
     private bool CanGetUp()
     {
@@ -261,7 +289,7 @@ public class PlayerController : HealthComponent
         playerCollider.height = crouchHeight;
         Vector3 direction = transform.right * walkAction.ReadValue<Vector2>().x + transform.forward * walkAction.ReadValue<Vector2>().y;
         Vector3.Normalize(direction);
-        Debug.Log(direction);
+        //Debug.Log(direction);
         while (isSliding) { 
             charController.Move(Time.deltaTime * slideSpeed * direction);
             yield return null;
