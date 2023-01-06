@@ -641,9 +641,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hearts:
-  - {fileID: 4530731257336747070}
-  - {fileID: 4530731256903456780}
   - {fileID: 4530731256350554902}
+  - {fileID: 4530731256903456780}
+  - {fileID: 4530731257336747070}
   fullHeart: {fileID: 21300000, guid: 888b605d893330e44bab41379a9383fc, type: 3}
   emptyHeart: {fileID: 21300000, guid: 2a037e9a149776d4da8c9c99afc4c716, type: 3}
 --- !u!1 &4530731257138626350

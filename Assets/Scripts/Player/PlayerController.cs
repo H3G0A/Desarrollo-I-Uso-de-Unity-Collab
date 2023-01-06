@@ -27,15 +27,19 @@ public class PlayerController : HealthComponent
     float jumpBufferCounter;
     int airJumpsCounter;
     float playerHeight;
-    bool isSliding;
     float slideCdCounter;
+
+    //CHECKS
+    bool isSliding;
     bool isCrouching;
     public bool wallRunning;
     public bool wallJump = false;
+    bool isStepSoundPlaying = false;
 
     [Header("Move")]
     [SerializeField]  float walkSpeed = 10;
     [SerializeField]  float runSpeed = 17;
+    [SerializeField] AudioClip stepSound;
     [Header("Jump")]
     [SerializeField]  float jumpForce = 17;
     [SerializeField]  float playerGravity = 6;
@@ -43,20 +47,22 @@ public class PlayerController : HealthComponent
     [SerializeField]  int airJumps = 1;
     [SerializeField]  float coyoteTime = .1f;
     [SerializeField]  float jumpBuffer = .07f;
+    [SerializeField] AudioClip jumpSound;
     [Header("Slide")]
     [SerializeField]  float crouchHeight = 1;
     [SerializeField]  float slideSpeed = 35;
     [SerializeField]  float slideTime = .5f;
     [SerializeField]  float slideCooldown = .5f;
+    [SerializeField] AudioClip slideSound;
     [Header("Mouse")]
     [SerializeField]  float mouseSensitivity = 13;
     [Header("HUD")]
     [SerializeField] GameObject playerHUD;
 
-    void Start()
+    protected override void Start()
     {
-        SetHealth();
-
+        base.Start();    
+        
         playerInput = GetComponent<PlayerInput>();
         charController = GetComponent<CharacterController>();
         mainCamera = GetComponentInChildren<Camera>();
@@ -78,6 +84,7 @@ public class PlayerController : HealthComponent
         playerHeight = charController.height;
         slideCooldown += slideTime; //Asi, slideCooldown es el valor de enfriamiento del deslizamiento DESPUES de terminar de deslizarse
         isCrouching = false;
+        audio.clip = stepSound;
 
         Cursor.lockState = CursorLockMode.Locked;
     }
@@ -111,6 +118,17 @@ public class PlayerController : HealthComponent
             {
                 hMovement = walkSpeed * direction;
             }
+
+            Debug.Log(hMovement);
+            if(IsGrounded() && hMovement != Vector3.zero && isStepSoundPlaying)
+            {
+                StartCoroutine(StepSound());
+            }
+            else
+            {
+                StopCoroutine(StepSound());
+            }
+
             charController.Move(Time.deltaTime * hMovement);
         }
         else
@@ -164,16 +182,19 @@ public class PlayerController : HealthComponent
         }
         else
         {
-            if (coyoteTimeCounter > 0 && jumpBufferCounter > 0)
+            if (coyoteTimeCounter > 0 && jumpBufferCounter > 0) //Aqui es donde salta
             {
+                audio.PlayOneShot(jumpSound);
                 vMovement = jumpForce * Vector3.up;
                 jumpBufferCounter = 0;
                 coyoteTimeCounter = 0;
             }
-            else if (jumpAction.triggered && airJumpsCounter > 0)
+            else if (jumpAction.triggered && airJumpsCounter > 0) //Salto en el aire
             {
+                audio.PlayOneShot(jumpSound);
                 vMovement = airJumpForce * Vector3.up;
                 airJumpsCounter -= 1;
+                jumpBufferCounter = 0;
             }
         }
         
@@ -238,7 +259,7 @@ public class PlayerController : HealthComponent
     /////////////////////////////AUXILIARES/////////////////////////////
     public bool IsGrounded()
     {
-        Vector3 lowCenter = transform.TransformPoint(playerCollider.center + Vector3.down * (playerCollider.height/2 - playerCollider.radius));
+        Vector3 lowCenter = transform.TransformPoint(playerCollider.center + Vector3.down * (playerCollider.height * .5f - playerCollider.radius));
         Vector3 halfExtents = new Vector3(playerCollider.radius * transform.localScale.x, playerCollider.radius * transform.localScale.y,
                                         playerCollider.radius * transform.localScale.z);
 
@@ -250,9 +271,11 @@ public class PlayerController : HealthComponent
 
     private bool CanGetUp()
     {
-        Vector3 upperCenter = transform.TransformPoint(playerCollider.center + Vector3.up * (playerCollider.height / 2 - playerCollider.radius));
-        bool result = Physics.BoxCast(upperCenter, new Vector3(playerCollider.radius, playerCollider.radius, playerCollider.radius), 
-                                Vector3.up, Quaternion.identity, (playerHeight - crouchHeight)/2 + .4f);
+        Vector3 upperCenter = transform.TransformPoint(playerCollider.center + Vector3.up * (playerCollider.height * .5f - playerCollider.radius));
+        Vector3 halfExtents = new Vector3(playerCollider.radius * transform.localScale.x, playerCollider.radius * transform.localScale.y,
+                                       playerCollider.radius * transform.localScale.z);
+
+        bool result = Physics.BoxCast(upperCenter, halfExtents, Vector3.up, Quaternion.identity, (playerHeight - crouchHeight) * .5f + .4f);
         return !result;
     }
 
@@ -287,20 +310,44 @@ public class PlayerController : HealthComponent
     {
         charController.height = crouchHeight;
         playerCollider.height = crouchHeight;
+
         Vector3 direction = transform.right * walkAction.ReadValue<Vector2>().x + transform.forward * walkAction.ReadValue<Vector2>().y;
         Vector3.Normalize(direction);
         //Debug.Log(direction);
-        while (isSliding) { 
+
+        while (isSliding) 
+        {
             charController.Move(Time.deltaTime * slideSpeed * direction);
             yield return null;
+
+            if (!audio.isPlaying) 
+            { 
+                audio.clip = slideSound;
+                audio.Play();
+            }
         }
+
+        audio.Stop();
+
         while (isCrouching)
         {
             yield return null;
         }
+
         charController.height = playerHeight;
         playerCollider.height = playerHeight;
         this.transform.position += Vector3.up * .5f;
         isCrouching = false;
+    }
+
+    private IEnumerator StepSound()
+    {
+        isStepSoundPlaying = true;
+        float speed = hMovement.magnitude;
+
+        audio.PlayOneShot(stepSound);
+        yield return new WaitForSeconds(1/(speed * .15f));
+
+        isStepSoundPlaying = false;
     }
 }
