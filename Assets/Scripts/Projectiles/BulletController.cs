@@ -5,7 +5,6 @@ using UnityEngine;
 public class BulletController : MonoBehaviour
 {
     BulletSpawner bulletSpawner;
-    [HideInInspector] public bool canMakeDamage;
 
     public void SetBulletSpawner(BulletSpawner bulletSpawner)
     {
@@ -16,12 +15,8 @@ public class BulletController : MonoBehaviour
     {
         if (collision.gameObject.tag.Equals("Player"))
         {
-            if(canMakeDamage)
-            {
-                collision.gameObject.GetComponent<PlayerController>().TakeDamage(1);
-                bulletSpawner.DeSpawn(this.gameObject);
-                canMakeDamage = false;
-            }
+            collision.gameObject.GetComponent<PlayerController>().TakeDamage(1);
+            bulletSpawner.DeSpawn(this.gameObject);
         }
         //Add more tags if necessary
         else if (collision.gameObject.tag.Equals("Floor") || collision.gameObject.tag.Equals("Obstacle"))

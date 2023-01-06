@@ -16,9 +16,9 @@ public class PlayerController : HealthComponent
     //SCRIPTS
     PlayerGun playerGunScr;
     PlayerHUD playerHUDScr;
+    WallRunning wallRunningScr;
 
     CharacterController charController;
-    CapsuleCollider playerCollider;
     Camera mainCamera;
     float xRotation;
     Vector3 hMovement;
@@ -32,8 +32,8 @@ public class PlayerController : HealthComponent
     //CHECKS
     bool isSliding;
     bool isCrouching;
-    public bool wallRunning;
-    public bool wallJump = false;
+    [HideInInspector] public bool wallRunning;
+    [HideInInspector] public bool wallJump = false;
     bool isStepSoundPlaying = false;
 
     [Header("Move")]
@@ -66,7 +66,8 @@ public class PlayerController : HealthComponent
         playerInput = GetComponent<PlayerInput>();
         charController = GetComponent<CharacterController>();
         mainCamera = GetComponentInChildren<Camera>();
-        playerCollider = GetComponent<CapsuleCollider>();
+        //playerCollider = charController.GetComponent<CapsuleCollider>(); //GetComponent<CapsuleCollider>();
+        wallRunningScr = GetComponent<WallRunning>();
 
         playerGunScr = mainCamera.GetComponentInChildren<PlayerGun>();
         playerHUDScr = playerHUD.GetComponent<PlayerHUD>();
@@ -176,7 +177,7 @@ public class PlayerController : HealthComponent
         if(wallJump)
         {
             Debug.Log("#Wall Applying wall jump");
-            vMovement = GetComponent<WallRunning>().wallJumpUpForce * Vector3.up + GetComponent<WallRunning>().wallNormal * GetComponent<WallRunning>().wallJumpSideForce;
+            vMovement = wallRunningScr.wallJumpUpForce * Vector3.up + wallRunningScr.wallNormal * wallRunningScr.wallJumpSideForce;
 
             wallJump = false;
         }
@@ -259,9 +260,9 @@ public class PlayerController : HealthComponent
     /////////////////////////////AUXILIARES/////////////////////////////
     public bool IsGrounded()
     {
-        Vector3 lowCenter = transform.TransformPoint(playerCollider.center + Vector3.down * (playerCollider.height * .5f - playerCollider.radius));
-        Vector3 halfExtents = new Vector3(playerCollider.radius * transform.localScale.x, playerCollider.radius * transform.localScale.y,
-                                        playerCollider.radius * transform.localScale.z);
+        Vector3 lowCenter = transform.TransformPoint(charController.center + Vector3.down * (charController.height * .5f - charController.radius));
+        Vector3 halfExtents = new Vector3(charController.radius * transform.localScale.x, charController.radius * transform.localScale.y,
+                                        charController.radius * transform.localScale.z);
 
         bool result = Physics.BoxCast(lowCenter, halfExtents, Vector3.down, Quaternion.identity, .1f);
         return result;
@@ -271,9 +272,9 @@ public class PlayerController : HealthComponent
 
     private bool CanGetUp()
     {
-        Vector3 upperCenter = transform.TransformPoint(playerCollider.center + Vector3.up * (playerCollider.height * .5f - playerCollider.radius));
-        Vector3 halfExtents = new Vector3(playerCollider.radius * transform.localScale.x, playerCollider.radius * transform.localScale.y,
-                                       playerCollider.radius * transform.localScale.z);
+        Vector3 upperCenter = transform.TransformPoint(charController.center + Vector3.up * (charController.height * .5f - charController.radius));
+        Vector3 halfExtents = new Vector3(charController.radius * transform.localScale.x, charController.radius * transform.localScale.y,
+                                       charController.radius * transform.localScale.z);
 
         bool result = Physics.BoxCast(upperCenter, halfExtents, Vector3.up, Quaternion.identity, (playerHeight - crouchHeight) * .5f + .4f);
         return !result;
@@ -309,7 +310,6 @@ public class PlayerController : HealthComponent
     private IEnumerator Sliding()
     {
         charController.height = crouchHeight;
-        playerCollider.height = crouchHeight;
 
         Vector3 direction = transform.right * walkAction.ReadValue<Vector2>().x + transform.forward * walkAction.ReadValue<Vector2>().y;
         Vector3.Normalize(direction);
@@ -335,7 +335,6 @@ public class PlayerController : HealthComponent
         }
 
         charController.height = playerHeight;
-        playerCollider.height = playerHeight;
         this.transform.position += Vector3.up * .5f;
         isCrouching = false;
     }

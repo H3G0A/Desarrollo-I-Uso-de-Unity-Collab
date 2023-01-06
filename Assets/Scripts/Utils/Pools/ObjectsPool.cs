@@ -49,7 +49,6 @@ public class ObjectsPool : MonoBehaviour
 
         GameObject go = pool[id].Dequeue();
         go.SetActive(true);
-        go.GetComponent<BulletController>().canMakeDamage = true;
 
         return go;
     }
