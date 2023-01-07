@@ -206,7 +206,7 @@ GameObject:
   - component: {fileID: 8812935978282671347}
   - component: {fileID: 4281011567612512310}
   m_Layer: 0
-  m_Name: SpikeSplitted
+  m_Name: Spikes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

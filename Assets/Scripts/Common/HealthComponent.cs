@@ -10,11 +10,11 @@ public class HealthComponent : MonoBehaviour
     [SerializeField] AudioClip hurtSound;
     [SerializeField] AudioClip deathSound;
 
-    protected AudioSource audio;
+    protected AudioSource audioSource;
 
     protected virtual void Start()
     {
-        audio = GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>();
 
         SetHealth();
     }
@@ -26,7 +26,7 @@ public class HealthComponent : MonoBehaviour
 
     public virtual void TakeDamage(int value)
     {
-        audio.PlayOneShot(hurtSound);
+        audioSource.PlayOneShot(hurtSound);
 
         currentHealth -= value;
         if (currentHealth <= 0)
@@ -38,7 +38,7 @@ public class HealthComponent : MonoBehaviour
 
     private void OnDeath()
     {
-        audio.PlayOneShot(deathSound);
+        audioSource.PlayOneShot(deathSound);
         Destroy(this.gameObject);
     }
 }

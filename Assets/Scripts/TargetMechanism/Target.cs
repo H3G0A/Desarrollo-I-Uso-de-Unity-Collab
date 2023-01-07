@@ -7,12 +7,11 @@ public class Target : MonoBehaviour
 {
     bool hasBeenTouched;
     public event Action onTargetHitted;
-    Animator animator;
+    [SerializeField] Animator animator;
+    public AudioClip targetHitted;
 
     private void Start()
     {
-        animator = GetComponent<Animator>();
-
         animator.SetTrigger("appear");
     }
     public void TargetHitted()
