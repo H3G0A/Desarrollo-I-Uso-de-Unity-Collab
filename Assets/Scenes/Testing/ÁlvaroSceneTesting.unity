@@ -826,6 +826,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puerta_Pared
       objectReference: {fileID: 0}
+    - target: {fileID: 4283712584611526507, guid: 14505210aa36b47488f538743421724c, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: af568e00962aeac43b4ec5c1b93298fa, type: 2}
     - target: {fileID: 4393389646667602393, guid: 14505210aa36b47488f538743421724c, type: 3}
       propertyPath: m_RootOrder
       value: 7
