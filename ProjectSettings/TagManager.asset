@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Floor
   - Obstacle
+  - Door
   layers:
   - Default
   - TransparentFX
