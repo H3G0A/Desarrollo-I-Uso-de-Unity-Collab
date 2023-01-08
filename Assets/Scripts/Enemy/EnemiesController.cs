@@ -6,6 +6,7 @@ public class EnemiesController : MonoBehaviour
 {
     private List<EnemyController> enemies;
     [SerializeField] BulletSpawner bulletSpawner;
+    [SerializeField] Transform player;
 
     // Start is called before the first frame update
     void Awake()
@@ -13,7 +14,7 @@ public class EnemiesController : MonoBehaviour
         enemies = new List<EnemyController>(GetComponentsInChildren<EnemyController>());
         foreach(EnemyController e in enemies)
         {
-            e.SetBulletSpawner(bulletSpawner);
+            e.Setup(bulletSpawner, player);
         }
     }
 

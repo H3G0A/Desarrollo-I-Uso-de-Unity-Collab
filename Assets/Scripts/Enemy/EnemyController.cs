@@ -6,7 +6,7 @@ using UnityEngine.AI;
 public class EnemyController : HealthComponent
 {
     NavMeshAgent agent;
-    [SerializeField] Transform player;
+    Transform player;
 
     [SerializeField] LayerMask whatIsPlayer;
 
@@ -44,15 +44,19 @@ public class EnemyController : HealthComponent
         }
     }
 
-    public void SetBulletSpawner(BulletSpawner bulletSpawner)
+    public void Setup(BulletSpawner bulletSpawner, Transform player)
     {
         this.bulletSpawner = bulletSpawner;
+        this.player = player;
     }
 
     private void SearchWalkPoint()
     {
-        walkPoint = endPoints[Random.Range(0, endPoints.Count - 1)].position;
+        int index = Random.Range(0, endPoints.Count);
+        Debug.Log("#Patrol index: " + index);
+        walkPoint = endPoints[index].position;
         walkPointSetted = true;
+        Debug.Log("#Patrol WalkPoint: " + walkPoint);
     }
 
     private void Patroling()
@@ -67,6 +71,8 @@ public class EnemyController : HealthComponent
         }
 
         Vector3 distaceToWalkPoint = transform.position - walkPoint;
+
+        //Debug.Log("#Patrol Distance To WalkPoint" + distaceToWalkPoint);
 
         if(distaceToWalkPoint.magnitude < 1f)
         {

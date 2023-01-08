@@ -145,21 +145,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 2
-  agent: {fileID: 0}
+  currentHealth: 0
+  hurtSound: {fileID: 0}
+  deathSound: {fileID: 0}
   player: {fileID: 0}
   whatIsPlayer:
     serializedVersion: 2
     m_Bits: 64
-  walkPoint: {x: 0, y: 0, z: 0}
-  walkPointSetted: 0
   timeBetweenAttacks: 0.5
   alreadyAttack: 0
   bulletDmg: 1
   bulletSpeed: 32
   sightRange: 30
-  attackRange: 30
-  playerInSightRange: 0
-  playerInAttackRange: 0
+  attackRange: 15
   endPoints:
   - {fileID: 0}
   - {fileID: 0}
