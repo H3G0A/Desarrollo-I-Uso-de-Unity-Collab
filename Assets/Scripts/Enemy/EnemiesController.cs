@@ -8,7 +8,6 @@ public class EnemiesController : MonoBehaviour
     [SerializeField] BulletSpawner bulletSpawner;
     [SerializeField] Transform player;
 
-    // Start is called before the first frame update
     void Awake()
     {
         enemies = new List<EnemyController>(GetComponentsInChildren<EnemyController>());
@@ -16,11 +15,5 @@ public class EnemiesController : MonoBehaviour
         {
             e.Setup(bulletSpawner, player);
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

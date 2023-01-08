@@ -34,6 +34,8 @@ public class EnemyController : HealthComponent
     [SerializeField] Transform canon;
 
     BulletSpawner bulletSpawner;
+
+    bool playerOnVision = false;
     private void Awake()
     {
         SetHealth();
@@ -107,19 +109,38 @@ public class EnemyController : HealthComponent
         //Check for sight and attack range
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
+
+
         
-        if (playerInSightRange && playerInAttackRange)
+        
+        if((playerInSightRange || playerInAttackRange) && !playerOnVision)
+        {
+            Vector3 direction = player.position - transform.position + Vector3.up;
+            if (Physics.Raycast(transform.position, direction, out RaycastHit hit, attackRange))
+            {
+                if (hit.transform.tag.Equals("Player"))
+                {
+                    playerOnVision = true;
+                    //Si lo puede ver puede ir a por él o atacarle, sino no.
+                    Debug.Log("#Enemy I Can see you muaahahaha");
+                }
+            }
+        }
+        
+
+        if (playerInSightRange && !playerInAttackRange && playerOnVision)
+        {
+            agent.SetDestination(player.position);
+        }
+        else if (playerInSightRange && playerInAttackRange && playerOnVision)
         {
             agent.SetDestination(transform.position);
             AttackPlayer();
         }
-        else if (playerInSightRange && !playerInAttackRange)
-        {
-            agent.SetDestination(player.position);
-        }
         else
         {
-            if(endPoints.Count > 0)
+            playerOnVision = false;
+            if (endPoints.Count > 0)
             {
                 Patroling();
             }
