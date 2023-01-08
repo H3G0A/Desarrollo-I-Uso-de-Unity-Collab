@@ -23,6 +23,11 @@ public class BulletController : MonoBehaviour
         {
             bulletSpawner.DeSpawn(this.gameObject);
         }
+        else if(collision.gameObject.tag.Equals("Target"))
+        {
+            Debug.Log("Zasca!");
+            collision.gameObject.GetComponent<Target>().Touch();
+        }
     }
 
 }

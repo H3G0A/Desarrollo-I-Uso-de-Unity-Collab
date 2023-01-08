@@ -15,12 +15,12 @@ public class PlayerGun : MonoBehaviour
 
     float lastTimeFired;
     Camera mainCamera;
-    AudioSource audio;
+    AudioSource audioSource;
 
     private void Start()
     {
         mainCamera = GetComponentInParent<Camera>();
-        audio = GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>();
         //El arma siempre mira al centro de la pantalla
         transform.LookAt(mainCamera.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, 50)));
     }
@@ -29,8 +29,8 @@ public class PlayerGun : MonoBehaviour
     {
         if(lastTimeFired + fireCooldown < Time.time)
         {
-            audio.pitch = Random.Range(1f, 1.3f);
-            audio.PlayOneShot(shootSound);
+            audioSource.pitch = Random.Range(1f, 1.3f);
+            audioSource.PlayOneShot(shootSound);
             muzzleFlash.Play();
             TrailRenderer trail = Instantiate(bulletTrail, firePoint.position, Quaternion.identity);
             if (Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out RaycastHit hit, range))
@@ -49,10 +49,21 @@ public class PlayerGun : MonoBehaviour
 
     private void ManageCollisions(RaycastHit hit)
     {
-        //Debug.Log(hit.transform.name);
-        HealthComponent healthComponent = hit.transform.GetComponent<HealthComponent>();
-        if (healthComponent)
-            healthComponent.TakeDamage(dmg);
+        if(hit.transform.tag.Equals("Enemy"))
+        {
+            HealthComponent healthComponent = hit.transform.GetComponent<HealthComponent>();
+            if (healthComponent)
+                healthComponent.TakeDamage(dmg);
+        }
+        else if(hit.transform.tag.Equals("Target"))
+        {
+            Target target = hit.transform.GetComponentInParent<Target>();
+            if(target)
+            {
+                target.Touch();
+                audioSource.PlayOneShot(target.targetHitted);
+            }
+        }
     }
 
     private IEnumerator SpawnTrail(TrailRenderer trail, Vector3 hitPoint)

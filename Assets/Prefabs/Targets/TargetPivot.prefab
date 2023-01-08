@@ -13,9 +13,8 @@ GameObject:
   - component: {fileID: 5512843093705261571}
   - component: {fileID: 5512843093705261570}
   - component: {fileID: 5512843093705261574}
-  - component: {fileID: 5512843093705261575}
   m_Layer: 0
-  m_Name: Target
+  m_Name: TargetPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 5512843093705261581}
   m_LocalRotation: {x: 0.5, y: -0.5, z: 0.5, w: 0.5}
   m_LocalPosition: {x: 0, y: 1.388, z: 0}
-  m_LocalScale: {x: 0.2, y: 0.53333324, z: 0.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5517270450051479472}
@@ -121,18 +120,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &5512843093705261575
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5512843093705261581}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 04bfa8c3f268ede4d86b6e41d22b4690, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &5512843093360557860
 PrefabInstance:
   m_ObjectHideFlags: 0

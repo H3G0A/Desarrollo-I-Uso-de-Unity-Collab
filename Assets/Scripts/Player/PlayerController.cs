@@ -85,7 +85,7 @@ public class PlayerController : HealthComponent
         playerHeight = charController.height;
         slideCooldown += slideTime; //Asi, slideCooldown es el valor de enfriamiento del deslizamiento DESPUES de terminar de deslizarse
         isCrouching = false;
-        audio.clip = stepSound;
+        audioSource.clip = stepSound;
 
         Cursor.lockState = CursorLockMode.Locked;
     }
@@ -120,7 +120,6 @@ public class PlayerController : HealthComponent
                 hMovement = walkSpeed * direction;
             }
 
-            Debug.Log(hMovement);
             if(IsGrounded() && hMovement != Vector3.zero && isStepSoundPlaying)
             {
                 StartCoroutine(StepSound());
@@ -185,14 +184,14 @@ public class PlayerController : HealthComponent
         {
             if (coyoteTimeCounter > 0 && jumpBufferCounter > 0) //Aqui es donde salta
             {
-                audio.PlayOneShot(jumpSound);
+                audioSource.PlayOneShot(jumpSound);
                 vMovement = jumpForce * Vector3.up;
                 jumpBufferCounter = 0;
                 coyoteTimeCounter = 0;
             }
             else if (jumpAction.triggered && airJumpsCounter > 0) //Salto en el aire
             {
-                audio.PlayOneShot(jumpSound);
+                audioSource.PlayOneShot(jumpSound);
                 vMovement = airJumpForce * Vector3.up;
                 airJumpsCounter -= 1;
                 jumpBufferCounter = 0;
@@ -320,14 +319,14 @@ public class PlayerController : HealthComponent
             charController.Move(Time.deltaTime * slideSpeed * direction);
             yield return null;
 
-            if (!audio.isPlaying) 
+            if (!audioSource.isPlaying) 
             { 
-                audio.clip = slideSound;
-                audio.Play();
+                audioSource.clip = slideSound;
+                audioSource.Play();
             }
         }
 
-        audio.Stop();
+        audioSource.Stop();
 
         while (isCrouching)
         {
@@ -344,7 +343,7 @@ public class PlayerController : HealthComponent
         isStepSoundPlaying = true;
         float speed = hMovement.magnitude;
 
-        audio.PlayOneShot(stepSound);
+        audioSource.PlayOneShot(stepSound);
         yield return new WaitForSeconds(1/(speed * .15f));
 
         isStepSoundPlaying = false;
