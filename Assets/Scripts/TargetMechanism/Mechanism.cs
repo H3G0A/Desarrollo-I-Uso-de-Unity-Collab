@@ -6,6 +6,7 @@ using UnityEngine;
 public class Mechanism : MonoBehaviour
 {
     [SerializeField] List<Target> targets;
+    [SerializeField] Key key;
 
     /*
      * Cada uno de los targets se suscribe 
@@ -43,5 +44,6 @@ public class Mechanism : MonoBehaviour
     private void ActionMechanism()
     {
         Debug.Log("Action Mechanism");
+        key.gameObject.SetActive(true);
     }
 }
