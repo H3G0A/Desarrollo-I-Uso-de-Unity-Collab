@@ -242,8 +242,8 @@ MonoBehaviour:
   wallRunning: 0
   wallJump: 0
   spawnPoint: {fileID: 0}
-  walkSpeed: 12
-  runSpeed: 20
+  walkSpeed: 10
+  runSpeed: 15
   stepSound: {fileID: 8300000, guid: 98061d04ee560d941bc523a132663d6f, type: 3}
   jumpForce: 17
   playerGravity: 45
@@ -253,7 +253,7 @@ MonoBehaviour:
   jumpBuffer: 0.07
   jumpSound: {fileID: 8300000, guid: 72e09f68945a615409906d737486222f, type: 3}
   crouchHeight: 1
-  slideSpeed: 35
+  slideSpeed: 30
   slideTime: 0.5
   slideCooldown: 0.5
   slideSound: {fileID: 8300000, guid: a33c10d1b520c974b84e034b3fab991a, type: 3}
