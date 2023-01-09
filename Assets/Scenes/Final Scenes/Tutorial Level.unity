@@ -14425,11 +14425,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6490591748377106253, guid: 1cd0771e74f18fe4099b6251b5df94d1, type: 3}
       propertyPath: sightRange
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 6490591748377106253, guid: 1cd0771e74f18fe4099b6251b5df94d1, type: 3}
       propertyPath: attackRange
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7530084788071704088, guid: 1cd0771e74f18fe4099b6251b5df94d1, type: 3}
       propertyPath: m_Name
@@ -18371,7 +18371,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-6884
+  m_Name: pb_Mesh32780
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -18794,6 +18794,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7990846109803993229, guid: 7da9bdc38b1cb864e9f4e6bc38e592a4, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1535434707}
     - target: {fileID: 7990846109803993230, guid: 7da9bdc38b1cb864e9f4e6bc38e592a4, type: 3}
       propertyPath: m_Name
       value: Bullet Spawner
@@ -18975,7 +18979,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh24770
+  m_Name: pb_Mesh32658
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
