@@ -241,6 +241,7 @@ MonoBehaviour:
   deathSound: {fileID: 8300000, guid: a6dd6650002311d4282204d3685a1005, type: 3}
   wallRunning: 0
   wallJump: 0
+  spawnPoint: {fileID: 0}
   walkSpeed: 12
   runSpeed: 20
   stepSound: {fileID: 8300000, guid: 98061d04ee560d941bc523a132663d6f, type: 3}
@@ -257,6 +258,7 @@ MonoBehaviour:
   slideCooldown: 0.5
   slideSound: {fileID: 8300000, guid: a33c10d1b520c974b84e034b3fab991a, type: 3}
   mouseSensitivity: 3
+  previousScene: 0
 --- !u!82 &2086807637
 AudioSource:
   m_ObjectHideFlags: 0
@@ -390,6 +392,7 @@ MonoBehaviour:
   wallRunForce: 200
   wallJumpUpForce: 7
   wallJumpSideForce: 12
+  stepWallSound: {fileID: 8300000, guid: ed03062ed2641fd47be66df9cc7ecd52, type: 3}
   wallCheckDistance: 1.5
   minJumpHeight: 2
   wallForward: {x: 0, y: 0, z: 0}
