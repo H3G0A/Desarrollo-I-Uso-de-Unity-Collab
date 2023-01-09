@@ -146,13 +146,21 @@ public class PlayerController : HealthComponent
                 StopCoroutine(StepSound());
             }
 
-            charController.Move(Time.deltaTime * hMovement);
+            if(charController.enabled)
+            {
+                charController.Move(Time.deltaTime * hMovement);
+            }
+            
         }
         else
         {
             Vector3 direction = GetComponent<WallRunning>().wallForward;
             hMovement = runSpeed * direction;
-            charController.Move(Time.deltaTime * hMovement);
+            if(charController.enabled)
+            {
+                charController.Move(Time.deltaTime * hMovement);
+            }
+            
         }
     }
     private void Gravity()
@@ -237,7 +245,10 @@ public class PlayerController : HealthComponent
 
     private void VerticalMovement()
     {
-        charController.Move(Time.deltaTime * vMovement);
+        if(charController.enabled)
+        {
+            charController.Move(Time.deltaTime * vMovement);
+        }
     }
 
     private void Look()
@@ -336,13 +347,16 @@ public class PlayerController : HealthComponent
 
         while (isSliding) 
         {
-            charController.Move(Time.deltaTime * slideSpeed * direction);
-            yield return null;
+            if(charController.enabled)
+            {
+                charController.Move(Time.deltaTime * slideSpeed * direction);
+                yield return null;
 
-            if (!audioSource.isPlaying) 
-            { 
-                audioSource.clip = slideSound;
-                audioSource.Play();
+                if (!audioSource.isPlaying)
+                {
+                    audioSource.clip = slideSound;
+                    audioSource.Play();
+                }
             }
         }
 
