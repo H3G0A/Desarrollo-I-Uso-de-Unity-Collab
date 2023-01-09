@@ -5,15 +5,16 @@ using UnityEngine;
 public class Spawner : MonoBehaviour
 {
     protected float timeToDespawn;
+    [SerializeField] protected ObjectsPool objectsPool;
     protected void SetUp(GameObject primitive, int poolSize, float timeToDespawn)
     {
         this.timeToDespawn = timeToDespawn;
-        ObjectsPool.PreLoad(primitive, poolSize);
+        objectsPool.PreLoad(primitive, poolSize);
     }
 
     protected GameObject Spawn(GameObject primitive, Transform spawnTransform)
     {
-        GameObject go = ObjectsPool.GetObject(primitive);
+        GameObject go = objectsPool.GetObject(primitive);
 
         go.transform.position = spawnTransform.position;
         go.transform.rotation = Quaternion.identity;
@@ -26,6 +27,6 @@ public class Spawner : MonoBehaviour
     IEnumerator DeSpawn(GameObject primitive, GameObject go)
     {
         yield return new WaitForSeconds(timeToDespawn);
-        ObjectsPool.RecicleObject(primitive, go);
+        objectsPool.RecicleObject(primitive, go);
     }
 }

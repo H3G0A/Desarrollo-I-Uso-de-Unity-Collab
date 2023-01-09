@@ -15,11 +15,9 @@ public class EnemyController : HealthComponent
     bool walkPointSetted;
 
     //Attacking
-    [SerializeField] float timeBetweenAttacks;
-    [SerializeField] bool alreadyAttack;
+    public bool alreadyAttack;
     [SerializeField] int bulletDmg;
     [SerializeField] float bulletSpeed;
-    BulletController bulletScript;
 
     //States
     [SerializeField] float sightRange;
@@ -40,6 +38,9 @@ public class EnemyController : HealthComponent
     BulletSpawner bulletSpawner;
 
     bool playerOnVision = false;
+
+    [SerializeField] Animator animator;
+
     private void Awake()
     {
         SetHealth();
@@ -59,10 +60,8 @@ public class EnemyController : HealthComponent
     private void SearchWalkPoint()
     {
         int index = Random.Range(0, endPoints.Count);
-        Debug.Log("#Patrol index: " + index);
         walkPoint = endPoints[index].position;
         walkPointSetted = true;
-        Debug.Log("#Patrol WalkPoint: " + walkPoint);
     }
 
     private void Patroling()
@@ -78,35 +77,28 @@ public class EnemyController : HealthComponent
 
         Vector3 distaceToWalkPoint = transform.position - walkPoint;
 
-        //Debug.Log("#Patrol Distance To WalkPoint" + distaceToWalkPoint);
-
         if(distaceToWalkPoint.magnitude < 1f)
         {
             walkPointSetted = false;
         }
     }
 
+    public void ThrowBullet()
+    {
+        bulletSpawner.SpawnBullet(canon);
+        audioSource.PlayOneShot(enemyShotSound);
+    }
 
     private void AttackPlayer()
     {
         transform.LookAt(player);
 
-        if(!alreadyAttack)
-        {
-            bulletSpawner.SpawnBullet(canon);
-            audioSource.PlayOneShot(enemyShotSound);
+        alreadyAttack = true;
 
+        animator.SetBool("Walking", false);
+        animator.SetTrigger("Attack");
 
-            alreadyAttack = true;
-
-            StartCoroutine(ResetAttack());
-        }
-    }
-
-    IEnumerator ResetAttack()
-    {
-        yield return new WaitForSeconds(timeBetweenAttacks);
-        alreadyAttack = false;
+        agent.SetDestination(transform.position);
     }
 
     private void checkPlayerVisibility()
@@ -130,8 +122,6 @@ public class EnemyController : HealthComponent
         //Check for sight and attack range
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
-
-
         
         
         if(playerInSightRange || playerInAttackRange)
@@ -140,18 +130,28 @@ public class EnemyController : HealthComponent
         }
         
 
-        if (playerInSightRange && !playerInAttackRange)
+        if (playerInSightRange && !playerInAttackRange && !alreadyAttack)
         {
+            alreadyAttack = false;
+
+            animator.SetBool("Walking", true);
+
             agent.SetDestination(player.position);
         }
         else if (playerInSightRange && playerInAttackRange && playerOnVision)
         {
-            agent.SetDestination(transform.position);
-            AttackPlayer();
+            if(!alreadyAttack)
+            {
+                AttackPlayer();
+            }
         }
         else
         {
+            alreadyAttack = false;
+            animator.SetBool("Walking", true);
+
             playerOnVision = false;
+
             if (endPoints.Count > 0)
             {
                 Patroling();
