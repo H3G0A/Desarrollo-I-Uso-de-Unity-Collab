@@ -24,6 +24,10 @@ public class EnemyController : HealthComponent
     //States
     [SerializeField] float sightRange;
     [SerializeField] float attackRange;
+
+    //AUDIO
+    [SerializeField] AudioClip enemyShotSound;
+
     bool playerInSightRange;
     bool playerInAttackRange;
 
@@ -90,6 +94,7 @@ public class EnemyController : HealthComponent
         if(!alreadyAttack)
         {
             bulletSpawner.SpawnBullet(canon);
+            audioSource.PlayOneShot(enemyShotSound);
 
 
             alreadyAttack = true;

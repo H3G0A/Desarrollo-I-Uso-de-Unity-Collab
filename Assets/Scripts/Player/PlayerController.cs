@@ -56,8 +56,6 @@ public class PlayerController : HealthComponent
     [SerializeField] AudioClip slideSound;
     [Header("Mouse")]
     [SerializeField]  float mouseSensitivity = 13;
-    [Header("HUD")]
-    [SerializeField] GameObject playerHUD;
 
     protected override void Start()
     {
@@ -66,11 +64,10 @@ public class PlayerController : HealthComponent
         playerInput = GetComponent<PlayerInput>();
         charController = GetComponent<CharacterController>();
         mainCamera = GetComponentInChildren<Camera>();
-        //playerCollider = charController.GetComponent<CapsuleCollider>(); //GetComponent<CapsuleCollider>();
-        wallRunningScr = GetComponent<WallRunning>();
 
+        wallRunningScr = GetComponent<WallRunning>();
         playerGunScr = mainCamera.GetComponentInChildren<PlayerGun>();
-        playerHUDScr = playerHUD.GetComponent<PlayerHUD>();
+        playerHUDScr = GameObject.FindGameObjectWithTag("HUD").GetComponent<PlayerHUD>();
 
         walkAction = playerInput.actions["Walk"];
         runAction = playerInput.actions["Run"];
@@ -120,7 +117,7 @@ public class PlayerController : HealthComponent
                 hMovement = walkSpeed * direction;
             }
 
-            if(IsGrounded() && hMovement != Vector3.zero && isStepSoundPlaying)
+            if(IsGrounded() && hMovement != Vector3.zero && !isStepSoundPlaying)
             {
                 StartCoroutine(StepSound());
             }
@@ -263,7 +260,7 @@ public class PlayerController : HealthComponent
         Vector3 halfExtents = new Vector3(charController.radius * transform.localScale.x, charController.radius * transform.localScale.y,
                                         charController.radius * transform.localScale.z);
 
-        bool result = Physics.BoxCast(lowCenter, halfExtents, Vector3.down, Quaternion.identity, .1f);
+        bool result = Physics.BoxCast(lowCenter, halfExtents, Vector3.down, Quaternion.identity, .1f, -1, QueryTriggerInteraction.Ignore);
         return result;
     }
 
@@ -302,6 +299,7 @@ public class PlayerController : HealthComponent
 
     private void OnDeath()
     {
+        audioSource.PlayOneShot(deathSound);
         Debug.Log("Player died");
     }
 

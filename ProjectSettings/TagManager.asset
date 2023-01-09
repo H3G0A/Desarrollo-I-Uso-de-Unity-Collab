@@ -8,7 +8,9 @@ TagManager:
   - Enemy
   - Floor
   - Obstacle
+  - Target
   - Door
+  - HUD
   layers:
   - Default
   - TransparentFX

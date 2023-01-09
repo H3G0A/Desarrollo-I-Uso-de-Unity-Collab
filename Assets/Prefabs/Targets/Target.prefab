@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 6726969798371524179}
-  targetHitted: {fileID: 8300000, guid: 1aaa51d93ee31544f8c4e06ce5600ec7, type: 3}
+  targetHitted: {fileID: 8300000, guid: 1b0cd85641239854e9e7a8122beadb1e, type: 3}
 --- !u!1001 &1286748519976385621
 PrefabInstance:
   m_ObjectHideFlags: 0
