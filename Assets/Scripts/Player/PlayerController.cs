@@ -22,6 +22,7 @@ public class PlayerController : HealthComponent
     Camera mainCamera;
     float xRotation;
     Vector3 hMovement;
+    public Vector3 HMovement { get { return hMovement; } }
     Vector3 vMovement;
     float coyoteTimeCounter;
     float jumpBufferCounter;
@@ -57,6 +58,8 @@ public class PlayerController : HealthComponent
     [Header("Mouse")]
     [SerializeField]  float mouseSensitivity = 13;
 
+
+    public AudioSource AudioSourceRef { get { return audioSource; } }
     protected override void Start()
     {
         base.Start();    

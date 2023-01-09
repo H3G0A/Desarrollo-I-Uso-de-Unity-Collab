@@ -109,6 +109,22 @@ public class EnemyController : HealthComponent
         alreadyAttack = false;
     }
 
+    private void checkPlayerVisibility()
+    {
+        Vector3 direction = player.position - transform.position + Vector3.up;
+        if (Physics.Raycast(transform.position, direction, out RaycastHit hit, attackRange))
+        {
+            if (hit.transform.tag.Equals("Player"))
+            {
+                playerOnVision = true;
+            }
+            else
+            {
+                playerOnVision = false;
+            }
+        }
+    }
+
     private void Update()
     {
         //Check for sight and attack range
@@ -118,22 +134,13 @@ public class EnemyController : HealthComponent
 
         
         
-        if((playerInSightRange || playerInAttackRange) && !playerOnVision)
+        if(playerInSightRange || playerInAttackRange)
         {
-            Vector3 direction = player.position - transform.position + Vector3.up;
-            if (Physics.Raycast(transform.position, direction, out RaycastHit hit, attackRange))
-            {
-                if (hit.transform.tag.Equals("Player"))
-                {
-                    playerOnVision = true;
-                    //Si lo puede ver puede ir a por él o atacarle, sino no.
-                    Debug.Log("#Enemy I Can see you muaahahaha");
-                }
-            }
+            checkPlayerVisibility();
         }
         
 
-        if (playerInSightRange && !playerInAttackRange && playerOnVision)
+        if (playerInSightRange && !playerInAttackRange)
         {
             agent.SetDestination(player.position);
         }

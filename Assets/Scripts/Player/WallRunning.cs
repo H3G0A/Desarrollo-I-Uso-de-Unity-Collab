@@ -11,6 +11,7 @@ public class WallRunning : MonoBehaviour
     [SerializeField] float wallRunForce;
     [SerializeField] public float wallJumpUpForce;
     [SerializeField] public float wallJumpSideForce;
+    [SerializeField] AudioClip stepWallSound;
 
     [Header("Inputs")]
     PlayerInput playerInput;
@@ -97,10 +98,7 @@ public class WallRunning : MonoBehaviour
         }
     }
 
-    private void StartWallRun()
-    {
-        pc.wallRunning = true;
-    }
+    
 
     private void WallRunningMovement()
     {
@@ -115,9 +113,30 @@ public class WallRunning : MonoBehaviour
         }
     }
 
+
+    private void StartWallRun()
+    {
+        Debug.Log("#Sound Starting wall Run");
+        pc.wallRunning = true;
+        StartCoroutine(WallSound());
+    }
+
     private void StopWallRun()
     {
+        Debug.Log("#Sound Stopping wall Run");
         pc.wallRunning = false;
+        StopCoroutine(WallSound());
+    }
+
+    IEnumerator WallSound()
+    {
+        float speed = pc.HMovement.magnitude;
+        while (pc.wallRunning)
+        {
+            pc.AudioSourceRef.PlayOneShot(stepWallSound);
+            
+            yield return new WaitForSeconds(1 / (speed * .2f));
+        }
     }
 
     private void WallJump()
@@ -125,7 +144,7 @@ public class WallRunning : MonoBehaviour
         exitingWall = true;
         exitWallTimer = exitWallTime;
         pc.wallJump = true;
-        pc.wallRunning = false;
+        StopWallRun();
 
         wallNormal = wallRight ? rightWallHit.normal : leftWallHit.normal;
     }
