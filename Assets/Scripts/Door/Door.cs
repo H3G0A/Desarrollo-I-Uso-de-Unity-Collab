@@ -45,7 +45,7 @@ public class Door : MonoBehaviour
 
     private void checkSound(){
         if(sound){
-            audioSource.PlayOneShot(openingSound);
+            //audioSource.PlayOneShot(openingSound);
             sound = false;
         }
     }
