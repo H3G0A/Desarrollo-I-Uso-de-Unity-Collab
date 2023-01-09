@@ -40,6 +40,7 @@ public class EnemyController : HealthComponent
     bool playerOnVision = false;
 
     [SerializeField] Animator animator;
+    bool isStatic = false;
 
     private void Awake()
     {
@@ -47,6 +48,7 @@ public class EnemyController : HealthComponent
         agent = GetComponent<NavMeshAgent>();
         if(endPoints.Count == 0)
         {
+            isStatic = true;
             attackRange = sightRange;
         }
     }
@@ -134,9 +136,12 @@ public class EnemyController : HealthComponent
         {
             alreadyAttack = false;
 
-            animator.SetBool("Walking", true);
-
-            agent.SetDestination(player.position);
+            if(!isStatic)
+            {
+                animator.SetBool("Walking", true);
+                agent.SetDestination(player.position);
+            }
+            
         }
         else if (playerInSightRange && playerInAttackRange && playerOnVision)
         {
@@ -148,14 +153,18 @@ public class EnemyController : HealthComponent
         else
         {
             alreadyAttack = false;
-            animator.SetBool("Walking", true);
-
-            playerOnVision = false;
-
-            if (endPoints.Count > 0)
+            if(!isStatic)
             {
-                Patroling();
+                animator.SetBool("Walking", true);
+
+                playerOnVision = false;
+
+                if (endPoints.Count > 0)
+                {
+                    Patroling();
+                }
             }
+            
         }
 
     }
