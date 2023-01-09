@@ -35,7 +35,6 @@ public class WallRunning : MonoBehaviour
     [Header("References")]
     public Transform orientation;
     PlayerController pc;
-    Rigidbody rb;
 
 
     void Start()
@@ -43,7 +42,6 @@ public class WallRunning : MonoBehaviour
         playerInput = GetComponent<PlayerInput>();
         jumpAction = playerInput.actions["Jump"];
 
-        rb = GetComponent<Rigidbody>();
         pc = GetComponent<PlayerController>();
     }
 
@@ -102,8 +100,6 @@ public class WallRunning : MonoBehaviour
 
     private void WallRunningMovement()
     {
-        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.y);
-
         wallNormal = wallRight ? rightWallHit.normal : leftWallHit.normal;
         wallForward = Vector3.Cross(wallNormal, transform.up);
 

@@ -3,42 +3,38 @@ using UnityEngine;
 
 public class ObjectsPool : MonoBehaviour
 {
-    private static Dictionary<int, Queue<GameObject>> pool = new Dictionary<int, Queue<GameObject>>();
-    private static Dictionary<int, GameObject> parents = new Dictionary<int, GameObject>();
+    private Dictionary<int, Queue<GameObject>> pool = new Dictionary<int, Queue<GameObject>>();
+    private Dictionary<int, GameObject> parents = new Dictionary<int, GameObject>();
+    private bool hasBeenPreloaded = false;
 
-    private static ObjectsPool instance;
-    public static ObjectsPool Instance { get { return instance; } }
 
-    private void Awake()
+    public void PreLoad(GameObject objectToPool, int poolSize)
     {
-        if(instance == null)
+        if(!hasBeenPreloaded)
         {
-            instance = this;
+            int id = objectToPool.GetInstanceID();
+
+            GameObject parent = new GameObject();
+            parent.name = objectToPool.name + " Pool";
+
+            Debug.Log("#Pool ParentName: " + parent.name);
+            Debug.Log("#Pool id: " + id);
+
+            parents.Add(id, parent);
+
+            pool.Add(id, new Queue<GameObject>());
+
+            hasBeenPreloaded = true;
         }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
 
-
-    public static void PreLoad(GameObject objectToPool, int poolSize)
-    {
-        int id = objectToPool.GetInstanceID();
-
-        GameObject parent = new GameObject();
-        parent.name = objectToPool.name + " Pool";
-        parents.Add(id, parent);
-
-        pool.Add(id, new Queue<GameObject>());
-
-        for(int i = 0; i < poolSize; ++i)
+        for (int i = 0; i < poolSize; ++i)
         {
             CreateObject(objectToPool);
         }
+
     }
 
-    public static GameObject GetObject(GameObject objectToPool)
+    public GameObject GetObject(GameObject objectToPool)
     {
         int id = objectToPool.GetInstanceID();
 
@@ -53,7 +49,7 @@ public class ObjectsPool : MonoBehaviour
         return go;
     }
 
-    private static void CreateObject(GameObject objectToPool)
+    private void CreateObject(GameObject objectToPool)
     {
         int id = objectToPool.GetInstanceID();
 
@@ -64,7 +60,7 @@ public class ObjectsPool : MonoBehaviour
         pool[id].Enqueue(go);
     }
 
-    public static void RecicleObject(GameObject objectToPool, GameObject objectToRecicle)
+    public void RecicleObject(GameObject objectToPool, GameObject objectToRecicle)
     {
         int id = objectToPool.GetInstanceID();
 
@@ -72,7 +68,7 @@ public class ObjectsPool : MonoBehaviour
         objectToRecicle.SetActive(false);
     }
 
-    private static GameObject GetParent(int parentID)
+    private GameObject GetParent(int parentID)
     {
         GameObject parent;
 
