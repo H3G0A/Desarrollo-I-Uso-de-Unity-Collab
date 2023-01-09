@@ -8,7 +8,10 @@ TagManager:
   - Enemy
   - Floor
   - Obstacle
+  - Target
   - Door
+  - HUD
+  - Hurtbox
   layers:
   - Default
   - TransparentFX

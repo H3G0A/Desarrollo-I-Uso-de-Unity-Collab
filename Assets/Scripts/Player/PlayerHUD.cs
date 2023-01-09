@@ -1,11 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class PlayerHUD : MonoBehaviour
 {
     [SerializeField] Image[] hearts;
     [SerializeField] Sprite fullHeart;
     [SerializeField] Sprite emptyHeart;
+    [SerializeField] TextMeshProUGUI keyText;
 
     public void SetHealth(int health)
     {
@@ -20,5 +22,10 @@ public class PlayerHUD : MonoBehaviour
                 hearts[i].sprite = emptyHeart;
             }
         }
+    }
+
+    public void SetKeys(int keys)
+    {
+        keyText.SetText(keys.ToString() + " / 6");
     }
 }

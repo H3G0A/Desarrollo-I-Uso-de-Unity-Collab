@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : HealthComponent
 {
@@ -35,8 +36,10 @@ public class PlayerController : HealthComponent
     [HideInInspector] public bool wallRunning;
     [HideInInspector] public bool wallJump = false;
     bool isStepSoundPlaying = false;
+    bool isDead = false;
 
     [Header("Move")]
+    [SerializeField] Transform spawnPoint;
     [SerializeField]  float walkSpeed = 10;
     [SerializeField]  float runSpeed = 17;
     [SerializeField] AudioClip stepSound;
@@ -56,8 +59,8 @@ public class PlayerController : HealthComponent
     [SerializeField] AudioClip slideSound;
     [Header("Mouse")]
     [SerializeField]  float mouseSensitivity = 13;
-    [Header("HUD")]
-    [SerializeField] GameObject playerHUD;
+    [Header("Death")]
+    [SerializeField] int previousScene; 
 
     protected override void Start()
     {
@@ -66,11 +69,10 @@ public class PlayerController : HealthComponent
         playerInput = GetComponent<PlayerInput>();
         charController = GetComponent<CharacterController>();
         mainCamera = GetComponentInChildren<Camera>();
-        //playerCollider = charController.GetComponent<CapsuleCollider>(); //GetComponent<CapsuleCollider>();
-        wallRunningScr = GetComponent<WallRunning>();
 
+        wallRunningScr = GetComponent<WallRunning>();
         playerGunScr = mainCamera.GetComponentInChildren<PlayerGun>();
-        playerHUDScr = playerHUD.GetComponent<PlayerHUD>();
+        playerHUDScr = GameObject.FindGameObjectWithTag("HUD").GetComponent<PlayerHUD>();
 
         walkAction = playerInput.actions["Walk"];
         runAction = playerInput.actions["Run"];
@@ -92,16 +94,28 @@ public class PlayerController : HealthComponent
 
     void Update()
     {
-        if (!isCrouching)
+        if (!isDead)
         {
-            HorizontalMovement();
-            Jump();
+            if (!isCrouching)
+            {
+                HorizontalMovement();
+                Jump();
+            }
+            Gravity();
+            VerticalMovement();
+            Slide();
+            Look();
+            Shoot();
         }
-        Gravity();
-        VerticalMovement();
-        Slide();
-        Look();
-        Shoot();
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Hurtbox"))
+        {
+            TakeDamage(1);
+            StartCoroutine(nameof(Respawn));
+        }
     }
 
     //////////////////////MOVEMENT
@@ -120,7 +134,7 @@ public class PlayerController : HealthComponent
                 hMovement = walkSpeed * direction;
             }
 
-            if(IsGrounded() && hMovement != Vector3.zero && isStepSoundPlaying)
+            if(IsGrounded() && hMovement != Vector3.zero && !isStepSoundPlaying)
             {
                 StartCoroutine(StepSound());
             }
@@ -255,6 +269,13 @@ public class PlayerController : HealthComponent
         base.TakeDamage(value); //con base. llamamos a funciones en el padre
         playerHUDScr.SetHealth(currentHealth);
     }
+    private void OnDeath()
+    {
+        isDead = true;
+        audioSource.PlayOneShot(deathSound);
+        Debug.Log("Player died");
+        StartCoroutine(nameof(LoadScene));
+    }
 
     /////////////////////////////AUXILIARES/////////////////////////////
     public bool IsGrounded()
@@ -263,7 +284,7 @@ public class PlayerController : HealthComponent
         Vector3 halfExtents = new Vector3(charController.radius * transform.localScale.x, charController.radius * transform.localScale.y,
                                         charController.radius * transform.localScale.z);
 
-        bool result = Physics.BoxCast(lowCenter, halfExtents, Vector3.down, Quaternion.identity, .1f);
+        bool result = Physics.BoxCast(lowCenter, halfExtents, Vector3.down, Quaternion.identity, .1f, -1, QueryTriggerInteraction.Ignore);
         return result;
     }
 
@@ -300,10 +321,6 @@ public class PlayerController : HealthComponent
         }
     }
 
-    private void OnDeath()
-    {
-        Debug.Log("Player died");
-    }
 
     /////////////////////////////CORRUTINAS/////////////////////////////
     private IEnumerator Sliding()
@@ -347,5 +364,25 @@ public class PlayerController : HealthComponent
         yield return new WaitForSeconds(1/(speed * .15f));
 
         isStepSoundPlaying = false;
+    }
+
+    private IEnumerator Respawn()
+    {
+        charController.enabled = false;
+
+        yield return new WaitForSeconds(1);
+
+        transform.position = spawnPoint.position;
+        Debug.Log("Respawning...");
+
+        charController.enabled = true;
+        isDead = false;
+    }
+
+    private IEnumerator LoadScene()
+    {
+        charController.enabled = false;
+        yield return new WaitForSeconds(1);
+        SceneManager.LoadScene(previousScene);
     }
 }

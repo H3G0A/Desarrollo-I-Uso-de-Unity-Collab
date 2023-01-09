@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Door : MonoBehaviour
 {
-    [SerializeField] private int keys;
+    public int keys = 0;
+    [SerializeField] private int keysRequired = 6;
     [SerializeField] private float openAngle = -95f; //Ángulo de apertura de la puerta
     [SerializeField] private float closeAngle = 0.0f; //Ángulo de cierre de la puerta
     [SerializeField] private float speed = 3.0f; //Velocidad a la que se abre la puerta
@@ -15,9 +16,17 @@ public class Door : MonoBehaviour
     [SerializeField] private bool isOpen = false; //Controla si la puerta está abierta o cerrada
     private bool sound = true;
 
+    PlayerHUD playerHUDScr;
+    AudioSource audioSource;
+    private void Start()
+    {
+        playerHUDScr = GameObject.FindGameObjectWithTag("HUD").GetComponent<PlayerHUD>();
+        playerHUDScr.SetKeys(keys);
+        audioSource = GetComponent<AudioSource>();
+    }
+
     void Update(){
-        keys = Keys.keys;
-        if(keys>=6){
+        if(keys>=keysRequired){
             isOpen = true;
         }
 
@@ -36,10 +45,15 @@ public class Door : MonoBehaviour
 
     private void checkSound(){
         if(sound){
-            AudioSource.PlayClipAtPoint(openingSound, transform.position, 1);
+            //audioSource.PlayOneShot(openingSound);
             sound = false;
         }
     }
 
+    public void addKeys(int keys)
+    {
+        this.keys += keys;
+        playerHUDScr.SetKeys(this.keys);
+    }
     
 }
