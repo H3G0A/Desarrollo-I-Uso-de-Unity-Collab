@@ -99,8 +99,10 @@ public class EnemyController : HealthComponent
 
         animator.SetBool("Walking", false);
         animator.SetTrigger("Attack");
-
-        agent.SetDestination(transform.position);
+        if (!isStatic)
+        {
+            agent.SetDestination(transform.position);
+        }
     }
 
     private void checkPlayerVisibility()
