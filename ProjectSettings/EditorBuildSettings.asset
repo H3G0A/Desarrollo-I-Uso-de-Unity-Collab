@@ -6,12 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: "Assets/Scenes/Testing/\xC1lvaroSceneTesting.unity"
-    guid: 2c9581948825c7b4d9ee5f796ff0f223
+    path: Assets/Scenes/Testing/HegoaTestingScene.unity
+    guid: 0bf4a87a49e08024ea4f9e5edc8c94d2
+  - enabled: 1
+    path: Assets/Scenes/Final Scenes/Alvaro Level.unity
+    guid: dd45d44b703a85149b7937c4eb6c4dfe
   - enabled: 1
     path: Assets/Scenes/Testing/GonzaloSceneTesting.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
-  - enabled: 1
-    path: Assets/Scenes/Testing/HegoaTestingScene.unity
-    guid: 0bf4a87a49e08024ea4f9e5edc8c94d2
   m_configObjects: {}
