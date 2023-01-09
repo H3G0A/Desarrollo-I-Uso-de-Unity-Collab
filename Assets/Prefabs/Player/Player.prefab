@@ -257,7 +257,6 @@ MonoBehaviour:
   slideCooldown: 0.5
   slideSound: {fileID: 8300000, guid: a33c10d1b520c974b84e034b3fab991a, type: 3}
   mouseSensitivity: 3
-  playerHUD: {fileID: 0}
 --- !u!82 &2086807637
 AudioSource:
   m_ObjectHideFlags: 0

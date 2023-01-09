@@ -101,18 +101,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4530731256292876751}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.99999994, y: 0.99999994, z: 0.99999994}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4530731257138626351}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -75.67, y: -10}
-  m_SizeDelta: {x: 150.89081, y: 102.4602}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 247.32971, y: -9.9999}
+  m_SizeDelta: {x: 238.8406, y: 102.4602}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4530731256292876786
 CanvasRenderer:
@@ -142,7 +142,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: x 6
+  m_text: 6 / 6
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -440,7 +440,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 17035c204825f6340a252046ab6476fd, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3699c3a6371ab9242b1d1075efbddefd, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -646,6 +646,7 @@ MonoBehaviour:
   - {fileID: 4530731257336747070}
   fullHeart: {fileID: 21300000, guid: 888b605d893330e44bab41379a9383fc, type: 3}
   emptyHeart: {fileID: 21300000, guid: 2a037e9a149776d4da8c9c99afc4c716, type: 3}
+  keyText: {fileID: 4530731256292876749}
 --- !u!1 &4530731257138626350
 GameObject:
   m_ObjectHideFlags: 0
@@ -681,8 +682,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 178.95898, y: 103.33008}
-  m_SizeDelta: {x: 274.484, y: 206.6635}
+  m_AnchoredPosition: {x: 225.09064, y: 126.64938}
+  m_SizeDelta: {x: 366.7473, y: 160.0249}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &4530731257336747067
 GameObject:
