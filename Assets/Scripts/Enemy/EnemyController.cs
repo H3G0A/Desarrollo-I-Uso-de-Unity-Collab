@@ -91,7 +91,12 @@ public class EnemyController : HealthComponent
     {
         transform.LookAt(player);
 
-        if(!alreadyAttack)
+        /*
+        * TODO
+        */
+        //Aplicar root motion
+
+        if (!alreadyAttack)
         {
             bulletSpawner.SpawnBullet(canon);
             audioSource.PlayOneShot(enemyShotSound);
@@ -142,6 +147,10 @@ public class EnemyController : HealthComponent
 
         if (playerInSightRange && !playerInAttackRange)
         {
+            /*
+             * TODO
+             */
+            //Quitar root motion
             agent.SetDestination(player.position);
         }
         else if (playerInSightRange && playerInAttackRange && playerOnVision)
@@ -150,7 +159,12 @@ public class EnemyController : HealthComponent
             AttackPlayer();
         }
         else
+
         {
+            /*
+            * TODO
+            */
+            //Quitar root motion
             playerOnVision = false;
             if (endPoints.Count > 0)
             {
