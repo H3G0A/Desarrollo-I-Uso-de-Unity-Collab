@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : HealthComponent
 {
@@ -36,8 +37,10 @@ public class PlayerController : HealthComponent
     [HideInInspector] public bool wallRunning;
     [HideInInspector] public bool wallJump = false;
     bool isStepSoundPlaying = false;
+    bool isDead = false;
 
     [Header("Move")]
+    [SerializeField] Transform spawnPoint;
     [SerializeField]  float walkSpeed = 10;
     [SerializeField]  float runSpeed = 17;
     [SerializeField] AudioClip stepSound;
@@ -57,6 +60,8 @@ public class PlayerController : HealthComponent
     [SerializeField] AudioClip slideSound;
     [Header("Mouse")]
     [SerializeField]  float mouseSensitivity = 13;
+    [Header("Death")]
+    [SerializeField] int previousScene; 
 
 
     public AudioSource AudioSourceRef { get { return audioSource; } }
@@ -92,16 +97,28 @@ public class PlayerController : HealthComponent
 
     void Update()
     {
-        if (!isCrouching)
+        if (!isDead)
         {
-            HorizontalMovement();
-            Jump();
+            if (!isCrouching)
+            {
+                HorizontalMovement();
+                Jump();
+            }
+            Gravity();
+            VerticalMovement();
+            Slide();
+            Look();
+            Shoot();
         }
-        Gravity();
-        VerticalMovement();
-        Slide();
-        Look();
-        Shoot();
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Hurtbox"))
+        {
+            TakeDamage(1);
+            StartCoroutine(nameof(Respawn));
+        }
     }
 
     //////////////////////MOVEMENT
@@ -255,6 +272,13 @@ public class PlayerController : HealthComponent
         base.TakeDamage(value); //con base. llamamos a funciones en el padre
         playerHUDScr.SetHealth(currentHealth);
     }
+    private void OnDeath()
+    {
+        isDead = true;
+        audioSource.PlayOneShot(deathSound);
+        Debug.Log("Player died");
+        StartCoroutine(nameof(LoadScene));
+    }
 
     /////////////////////////////AUXILIARES/////////////////////////////
     public bool IsGrounded()
@@ -300,11 +324,6 @@ public class PlayerController : HealthComponent
         }
     }
 
-    private void OnDeath()
-    {
-        audioSource.PlayOneShot(deathSound);
-        Debug.Log("Player died");
-    }
 
     /////////////////////////////CORRUTINAS/////////////////////////////
     private IEnumerator Sliding()
@@ -348,5 +367,25 @@ public class PlayerController : HealthComponent
         yield return new WaitForSeconds(1/(speed * .15f));
 
         isStepSoundPlaying = false;
+    }
+
+    private IEnumerator Respawn()
+    {
+        charController.enabled = false;
+
+        yield return new WaitForSeconds(1);
+
+        transform.position = spawnPoint.position;
+        Debug.Log("Respawning...");
+
+        charController.enabled = true;
+        isDead = false;
+    }
+
+    private IEnumerator LoadScene()
+    {
+        charController.enabled = false;
+        yield return new WaitForSeconds(1);
+        SceneManager.LoadScene(previousScene);
     }
 }
