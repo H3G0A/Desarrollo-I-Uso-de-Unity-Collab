@@ -25,6 +25,6 @@ public class BulletSpawner : Spawner
 
     public void DeSpawn(GameObject go)
     {
-        ObjectsPool.RecicleObject(bullet, go);
+        objectsPool.RecicleObject(bullet, go);
     }
 }
