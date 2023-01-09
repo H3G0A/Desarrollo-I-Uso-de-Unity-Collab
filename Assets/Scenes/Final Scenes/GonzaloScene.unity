@@ -31726,9 +31726,17 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 3644268590611920245, guid: 24e2eccf872a20c449df3a48c6a411bb, type: 3}
+      propertyPath: runSpeed
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3644268590611920245, guid: 24e2eccf872a20c449df3a48c6a411bb, type: 3}
       propertyPath: playerHUD
       value: 
       objectReference: {fileID: 1339486915}
+    - target: {fileID: 3644268590611920245, guid: 24e2eccf872a20c449df3a48c6a411bb, type: 3}
+      propertyPath: walkSpeed
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 3644268590611920245, guid: 24e2eccf872a20c449df3a48c6a411bb, type: 3}
       propertyPath: spawnPoint
       value: 
