@@ -100,7 +100,6 @@ GameObject:
   - component: {fileID: 3644268590611920247}
   - component: {fileID: 3644268590611920245}
   - component: {fileID: 2086807637}
-  - component: {fileID: 1953777473}
   - component: {fileID: 1953777474}
   m_Layer: 6
   m_Name: Player
@@ -241,6 +240,7 @@ MonoBehaviour:
   deathSound: {fileID: 8300000, guid: a6dd6650002311d4282204d3685a1005, type: 3}
   wallRunning: 0
   wallJump: 0
+  spawnPoint: {fileID: 0}
   walkSpeed: 12
   runSpeed: 20
   stepSound: {fileID: 8300000, guid: 98061d04ee560d941bc523a132663d6f, type: 3}
@@ -257,6 +257,7 @@ MonoBehaviour:
   slideCooldown: 0.5
   slideSound: {fileID: 8300000, guid: a33c10d1b520c974b84e034b3fab991a, type: 3}
   mouseSensitivity: 3
+  previousScene: 0
 --- !u!82 &2086807637
 AudioSource:
   m_ObjectHideFlags: 0
@@ -353,22 +354,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!54 &1953777473
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3644268590611920237}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 112
-  m_CollisionDetection: 0
 --- !u!114 &1953777474
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -390,6 +375,7 @@ MonoBehaviour:
   wallRunForce: 200
   wallJumpUpForce: 7
   wallJumpSideForce: 12
+  stepWallSound: {fileID: 0}
   wallCheckDistance: 1.5
   minJumpHeight: 2
   wallForward: {x: 0, y: 0, z: 0}
